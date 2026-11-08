@@ -28,6 +28,10 @@
   let currentIndex = 0;
   const totalSlides = slides.length;
 
+  // Transition Lock & Debounce (prevents double skipping)
+  let isNavigating = false;
+  let lastTouchTime = 0;
+
   // Touch / Swipe Tracking Variables
   let touchStartX = 0;
   let touchStartY = 0;
@@ -60,6 +64,10 @@
 
   // --- Slide Navigation ---
   function goToSlide(index) {
+    if (isNavigating) return; // Prevent double-triggering
+    isNavigating = true;
+    setTimeout(() => { isNavigating = false; }, 380);
+
     if (index < 0) index = 0;
     if (index >= totalSlides) index = 0; // Loop back to start
 
@@ -92,7 +100,7 @@
         wakeLock = await navigator.wakeLock.request('screen');
       }
     } catch (err) {
-      console.log('Wake Lock request skipped or not supported:', err);
+      console.log('Wake Lock skipped:', err);
     }
   }
 
@@ -106,7 +114,7 @@
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(err => {
-        console.log('Error attempting fullscreen:', err);
+        console.log('Fullscreen skipped:', err);
       });
     } else {
       if (document.exitFullscreen) {
@@ -174,9 +182,7 @@
     });
   });
 
-  // --- Event Listeners ---
-
-  // Secret Top Zones
+  // --- Secret Top Zones Listeners ---
   zoneBack.addEventListener('click', (e) => {
     e.stopPropagation();
     prevSlide();
@@ -195,12 +201,14 @@
   // Long press on top-right also opens cheat sheet
   let longPressTimer = null;
   zoneCheat.addEventListener('touchstart', (e) => {
+    lastTouchTime = Date.now();
     longPressTimer = setTimeout(() => {
       openCheatSheet();
-    }, 500);
+    }, 450);
   }, { passive: true });
 
   zoneCheat.addEventListener('touchend', () => {
+    lastTouchTime = Date.now();
     clearTimeout(longPressTimer);
   });
 
@@ -209,9 +217,10 @@
     closeCheatSheet();
   });
 
-  // Main Viewport Tap & Swipe
+  // --- Main Viewport Tap & Swipe Handling ---
   viewport.addEventListener('touchstart', (e) => {
     if (cheatDrawer.classList.contains('open')) return;
+    lastTouchTime = Date.now();
     touchStartX = e.changedTouches[0].clientX;
     touchStartY = e.changedTouches[0].clientY;
     touchStartTime = Date.now();
@@ -222,13 +231,14 @@
     if (cheatDrawer.classList.contains('open')) return;
     const currentX = e.changedTouches[0].clientX;
     const currentY = e.changedTouches[0].clientY;
-    if (Math.abs(currentX - touchStartX) > 10 || Math.abs(currentY - touchStartY) > 10) {
+    if (Math.abs(currentX - touchStartX) > 12 || Math.abs(currentY - touchStartY) > 12) {
       isSwiping = true;
     }
   }, { passive: true });
 
   viewport.addEventListener('touchend', (e) => {
     if (cheatDrawer.classList.contains('open')) return;
+    lastTouchTime = Date.now();
     touchEndX = e.changedTouches[0].clientX;
     touchEndY = e.changedTouches[0].clientY;
     const deltaX = touchEndX - touchStartX;
@@ -236,7 +246,7 @@
     const deltaTime = Date.now() - touchStartTime;
 
     // Detect horizontal swipe
-    if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5 && deltaTime < 450) {
+    if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4 && deltaTime < 400) {
       if (deltaX < 0) {
         nextSlide(); // Swiped left -> next
       } else {
@@ -245,19 +255,20 @@
       return;
     }
 
-    // Otherwise, standard tap advances
-    if (!isSwiping && deltaTime < 400) {
+    // Standard single tap advances one by one
+    if (!isSwiping && deltaTime < 350) {
       // Don't trigger if click was near top secret zones
-      if (touchStartY > 80) {
+      if (touchStartY > 75) {
         nextSlide();
         requestWakeLock();
       }
     }
   }, { passive: true });
 
-  // Fallback click for desktop
+  // Fallback click for desktop mouse only (ignores synthesized mobile touch clicks)
   viewport.addEventListener('click', (e) => {
     if (cheatDrawer.classList.contains('open')) return;
+    if (Date.now() - lastTouchTime < 600) return; // Ignore mobile synthesized clicks!
     if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart')) return;
     nextSlide();
   });
