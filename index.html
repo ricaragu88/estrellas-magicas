@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>El Código de las Estrellas - Alex El Mago</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#0a0b14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Estrellas Mágicas">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+    
+    <!-- Secret Tap Zones for the Magician (Invisible during show) -->
+    <div class="secret-tap-zone top-left" id="zoneBack" title="Retroceder"></div>
+    <div class="secret-tap-zone top-center" id="zoneFullscreen" title="Pantalla Completa"></div>
+    <div class="secret-tap-zone top-right" id="zoneCheat" title="Chuleta / Asistente Secreto"></div>
+
+    <!-- Main Carousel Viewport -->
+    <div class="carousel-viewport" id="viewport">
+      <div class="slides-track" id="slidesTrack">
+        
+        <!-- Slide 0: Cuadrícula de 15 Emojis -->
+        <section class="slide" data-index="0" id="slide-0">
+          <div class="card-wrapper grid-card-wrapper">
+            <img src="assets/00_cuadricula.png" alt="Cuadrícula de 15 emoticonos" class="slide-img grid-img" draggable="false">
+          </div>
+          <div class="slide-caption">
+            <span class="caption-badge">Paso 1</span>
+            <p>Elige un símbolo mentalmente</p>
+          </div>
+        </section>
+
+        <!-- Slide 1: Estrella 1 (Vela / Base 1) -->
+        <section class="slide" data-index="1" id="slide-1">
+          <div class="card-wrapper star-card-wrapper">
+            <img src="assets/01_estrella_vela.png" alt="Estrella Base 1 - Vela" class="slide-img star-img" draggable="false">
+          </div>
+          <div class="slide-caption">
+            <span class="caption-badge star-badge badge-orange">1</span>
+            <p>¿Aparece tu símbolo aquí?</p>
+          </div>
+        </section>
+
+        <!-- Slide 2: Estrella 2 (Enamorado / Base 2) -->
+        <section class="slide" data-index="2" id="slide-2">
+          <div class="card-wrapper star-card-wrapper">
+            <img src="assets/02_estrella_enamorado.png" alt="Estrella Base 2 - Enamorado" class="slide-img star-img" draggable="false">
+          </div>
+          <div class="slide-caption">
+            <span class="caption-badge star-badge badge-green">2</span>
+            <p>¿Y en esta estrella?</p>
+          </div>
+        </section>
+
+        <!-- Slide 3: Estrella 3 (Trébol / Base 4) -->
+        <section class="slide" data-index="3" id="slide-3">
+          <div class="card-wrapper star-card-wrapper">
+            <img src="assets/03_estrella_trebol.png" alt="Estrella Base 4 - Trébol" class="slide-img star-img" draggable="false">
+          </div>
+          <div class="slide-caption">
+            <span class="caption-badge star-badge badge-yellow">3</span>
+            <p>¿Está en esta otra?</p>
+          </div>
+        </section>
+
+        <!-- Slide 4: Estrella 4 (Pulpo / Base 8) -->
+        <section class="slide" data-index="4" id="slide-4">
+          <div class="card-wrapper star-card-wrapper">
+            <img src="assets/04_estrella_pulpo.png" alt="Estrella Base 8 - Pulpo" class="slide-img star-img" draggable="false">
+          </div>
+          <div class="slide-caption">
+            <span class="caption-badge star-badge badge-blue">4</span>
+            <p>¿Y en esta última?</p>
+          </div>
+        </section>
+
+        <!-- Slide 5: Revelación / Telepatía -->
+        <section class="slide reveal-slide" data-index="5" id="slide-5">
+          <div class="card-wrapper reveal-wrapper">
+            <div class="telepathy-glow">
+              <div class="magic-sparkles"></div>
+              <div class="magic-eye-icon">🔮</div>
+            </div>
+            <h2 class="reveal-title">¡Mente Conectada!</h2>
+            <p class="reveal-subtitle">Alex sabe exactamente el símbolo que has elegido...</p>
+            <button class="btn-restart" id="btnRestart">
+              <span>Repetir con otro espectador</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- Minimal Subtle Dots Indicator -->
+    <div class="dots-indicator" id="dotsContainer">
+      <span class="dot active" data-index="0"></span>
+      <span class="dot" data-index="1"></span>
+      <span class="dot" data-index="2"></span>
+      <span class="dot" data-index="3"></span>
+      <span class="dot" data-index="4"></span>
+      <span class="dot" data-index="5"></span>
+    </div>
+
+    <!-- Hidden Magician Cheat Sheet / Copilot Drawer -->
+    <aside class="cheat-sheet-drawer" id="cheatDrawer" aria-hidden="true">
+      <div class="drawer-header">
+        <h3>🧙‍♂️ Asistente Secreto del Mago</h3>
+        <button class="btn-close-drawer" id="btnCloseCheat">✕</button>
+      </div>
+      
+      <div class="drawer-content">
+        <!-- Interactive Solver -->
+        <div class="cheat-section">
+          <h4>Calculador en directo (Marca los "SÍ")</h4>
+          <div class="binary-toggles">
+            <button type="button" class="btn-toggle-base" data-val="1">
+              <span class="val-num">+1</span>
+              <span class="val-emoji">🕯️ Vela</span>
+            </button>
+            <button type="button" class="btn-toggle-base" data-val="2">
+              <span class="val-num">+2</span>
+              <span class="val-emoji">😍 Ojos Corazón</span>
+            </button>
+            <button type="button" class="btn-toggle-base" data-val="4">
+              <span class="val-num">+4</span>
+              <span class="val-emoji">🍀 Trébol</span>
+            </button>
+            <button type="button" class="btn-toggle-base" data-val="8">
+              <span class="val-num">+8</span>
+              <span class="val-emoji">🐙 Pulpo</span>
+            </button>
+          </div>
+
+          <div class="solver-result" id="solverResult">
+            <div class="solver-sum">Suma: <span id="solverSumVal">0</span></div>
+            <div class="solver-card" id="solverCard">
+              <span class="solver-symbol" id="solverSymbol">❓</span>
+              <span class="solver-name" id="solverName">Ninguna seleccionada</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mnemonic Reference Table -->
+        <div class="cheat-section">
+          <h4>Tabla Mnemotécnica Rápida</h4>
+          <div class="mnemonic-grid">
+            <div class="mnem-item" data-num="1"><span class="m-num">1</span> <span class="m-em">🕯️</span> Vela (Forma recta de 1)</div>
+            <div class="mnem-item" data-num="2"><span class="m-num">2</span> <span class="m-em">😍</span> Enamorado (2 ojos de corazón)</div>
+            <div class="mnem-item" data-num="3"><span class="m-num">3</span> <span class="m-em">😘</span> Beso (Labios forma de 3 = 2+1)</div>
+            <div class="mnem-item" data-num="4"><span class="m-num">4</span> <span class="m-em">🍀</span> Trébol (4 hojas)</div>
+            <div class="mnem-item" data-num="5"><span class="m-num">5</span> <span class="m-em">🖐️</span> Mano (5 dedos = 4+1)</div>
+            <div class="mnem-item" data-num="6"><span class="m-num">6</span> <span class="m-em">🎲</span> Dado (6 caras = 4+2)</div>
+            <div class="mnem-item" data-num="7"><span class="m-num">7</span> <span class="m-em">🎵</span> Nota (7 notas = 4+2+1)</div>
+            <div class="mnem-item" data-num="8"><span class="m-num">8</span> <span class="m-em">🐙</span> Pulpo (8 tentáculos)</div>
+            <div class="mnem-item" data-num="9"><span class="m-num">9</span> <span class="m-em">🎈</span> Globo (Silueta de 9 = 8+1)</div>
+            <div class="mnem-item" data-num="10"><span class="m-num">10</span> <span class="m-em">❌</span> Cruz (X romano = 8+2)</div>
+            <div class="mnem-item" data-num="11"><span class="m-num">11</span> <span class="m-em">⚽</span> Balón (11 jugadores = 8+2+1)</div>
+            <div class="mnem-item" data-num="12"><span class="m-num">12</span> <span class="m-em">🕒</span> Reloj (12 horas = 8+4)</div>
+            <div class="mnem-item" data-num="13"><span class="m-num">13</span> <span class="m-em">💀</span> Calavera (Número 13 = 8+4+1)</div>
+            <div class="mnem-item" data-num="14"><span class="m-num">14</span> <span class="m-em">🌸</span> Flor (14 febrero = 8+4+2)</div>
+            <div class="mnem-item" data-num="15"><span class="m-num">15</span> <span class="m-em">👱‍♀️</span> Quinceañera (15 años = 8+4+2+1)</div>
+          </div>
+        </div>
+
+        <div class="cheat-section">
+          <h4>Atajos y Control</h4>
+          <ul class="shortcuts-list">
+            <li><strong>Tocar pantalla:</strong> Avanzar a la siguiente estrella</li>
+            <li><strong>Tocar esquina superior izq:</strong> Retroceder</li>
+            <li><strong>Tocar esquina superior centro:</strong> Pantalla completa (oculta barras)</li>
+            <li><strong>Tocar o mantener esquina superior der:</strong> Abrir/cerrar este panel</li>
+            <li><strong>Deslizar (Swipe):</strong> Izquierda / Derecha para cambiar</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

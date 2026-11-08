@@ -1,0 +1,537 @@
+/* ========================================================
+   El Código de las Estrellas - Estilos Profesionales
+   ======================================================== */
+
+:root {
+  --bg-color: #080911;
+  --bg-gradient: radial-gradient(circle at 50% 30%, #171b30 0%, #090a12 70%, #040509 100%);
+  --text-primary: #f0f3fc;
+  --text-muted: #8c96b5;
+  --gold-accent: #f5c443;
+  --gold-glow: rgba(245, 196, 67, 0.35);
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --slide-transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: fixed;
+  background-color: var(--bg-color);
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  touch-action: manipulation;
+}
+
+/* App Main Container */
+.app-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-gradient);
+  padding: env(safe-area-inset-top, 16px) env(safe-area-inset-right, 12px) env(safe-area-inset-bottom, 16px) env(safe-area-inset-left, 12px);
+  overflow: hidden;
+}
+
+/* Background Cosmic Atmosphere */
+.app-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(1.5px 1.5px at 20px 30px, #ffffff88, transparent),
+    radial-gradient(1px 1px at 60px 120px, #ffffff66, transparent),
+    radial-gradient(2px 2px at 150px 70px, #ffd70077, transparent),
+    radial-gradient(1.5px 1.5px at 280px 220px, #60a5fa77, transparent),
+    radial-gradient(1px 1px at 320px 420px, #ffffff55, transparent),
+    radial-gradient(2px 2px at 90px 490px, #ffd70066, transparent);
+  background-size: 360px 540px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------
+   Secret Magician Tap Zones
+   Discreet, invisible touch zones at the top
+   -------------------------------------------------------- */
+.secret-tap-zone {
+  position: absolute;
+  top: 0;
+  height: 70px;
+  z-index: 100;
+  cursor: pointer;
+  /* Visual debug during dev: border: 1px dashed rgba(255,255,255,0.1); */
+}
+
+.secret-tap-zone.top-left {
+  left: 0;
+  width: 25%;
+}
+
+.secret-tap-zone.top-center {
+  left: 25%;
+  width: 50%;
+}
+
+.secret-tap-zone.top-right {
+  right: 0;
+  width: 25%;
+}
+
+/* --------------------------------------------------------
+   Carousel Viewport & Slides
+   -------------------------------------------------------- */
+.carousel-viewport {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.slides-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: var(--slide-transition);
+  will-change: transform;
+}
+
+.slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 14px 44px 14px;
+  position: relative;
+  transition: opacity 0.3s ease;
+}
+
+/* Card and Image Wrappers */
+.card-wrapper {
+  flex: 1;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.slide-img {
+  max-width: 92%;
+  max-height: 82vh;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 32px rgba(0, 0, 0, 0.65));
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+/* Specific styling for the grid card */
+.grid-card-wrapper {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  padding: 12px;
+  max-height: 76vh;
+}
+
+.grid-img {
+  max-height: 72vh;
+  border-radius: 14px;
+}
+
+/* Specific styling for the star cards */
+.star-card-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.star-img {
+  max-height: 74vh;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.8));
+}
+
+/* Subtle breathing animation for stars when active */
+.slide.active .star-img {
+  animation: starPulse 6s ease-in-out infinite alternate;
+}
+
+@keyframes starPulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.025); }
+}
+
+/* Slide Caption / Subtitles */
+.slide-caption {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(18, 21, 38, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.caption-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.star-badge.badge-orange { background: #f97316; }
+.star-badge.badge-green  { background: #84cc16; }
+.star-badge.badge-yellow { background: #eab308; color: #1e1b4b; }
+.star-badge.badge-blue   { background: #06b6d4; }
+
+.slide-caption p {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+/* --------------------------------------------------------
+   Slide 5: Telepathy / Mentalism Finale
+   -------------------------------------------------------- */
+.reveal-wrapper {
+  flex-direction: column;
+  text-align: center;
+  gap: 20px;
+  padding: 24px;
+}
+
+.telepathy-glow {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.3) 0%, rgba(79, 70, 229, 0.05) 70%, transparent 100%);
+  border: 2px solid rgba(168, 85, 247, 0.4);
+  box-shadow: 0 0 50px rgba(168, 85, 247, 0.4);
+  animation: glowPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes glowPulse {
+  0% { transform: scale(0.96); box-shadow: 0 0 30px rgba(168, 85, 247, 0.3); }
+  100% { transform: scale(1.05); box-shadow: 0 0 70px rgba(168, 85, 247, 0.6); }
+}
+
+.magic-eye-icon {
+  font-size: 4rem;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+}
+
+.reveal-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff 0%, #d8b4fe 50%, #fef08a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.reveal-subtitle {
+  font-size: 1.05rem;
+  color: #cbd5e1;
+  max-width: 320px;
+  line-height: 1.45;
+}
+
+.btn-restart {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.45);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btn-restart:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+/* --------------------------------------------------------
+   Minimal Dots Indicator
+   -------------------------------------------------------- */
+.dots-indicator {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 14px) + 8px);
+  display: flex;
+  gap: 8px;
+  z-index: 50;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transition: transform 0.25s ease, background-color 0.25s ease, width 0.25s ease;
+}
+
+.dot.active {
+  width: 20px;
+  border-radius: 999px;
+  background: var(--gold-accent);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* --------------------------------------------------------
+   Magician Secret Cheat Sheet Drawer
+   -------------------------------------------------------- */
+.cheat-sheet-drawer {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 7, 14, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(105%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 20px) 16px;
+  overflow-y: auto;
+}
+
+.cheat-sheet-drawer.open {
+  transform: translateY(0);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.drawer-header h3 {
+  font-size: 1.15rem;
+  color: var(--gold-accent);
+  font-weight: 700;
+}
+
+.btn-close-drawer {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.drawer-content {
+  padding-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.cheat-section h4 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  margin-bottom: 10px;
+}
+
+/* Binary Live Solver */
+.binary-toggles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.btn-toggle-base {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 12px 10px;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-base .val-num {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.btn-toggle-base .val-emoji {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.btn-toggle-base.active {
+  background: rgba(245, 196, 67, 0.16);
+  border-color: var(--gold-accent);
+  box-shadow: 0 0 16px rgba(245, 196, 67, 0.25);
+}
+
+.btn-toggle-base.active .val-num {
+  color: var(--gold-accent);
+}
+
+.btn-toggle-base.active .val-emoji {
+  color: #fff;
+}
+
+.solver-result {
+  background: rgba(20, 24, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.solver-sum {
+  font-size: 1rem;
+  color: #94a3b8;
+}
+
+.solver-sum span {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--gold-accent);
+}
+
+.solver-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.solver-symbol {
+  font-size: 1.8rem;
+}
+
+.solver-name {
+  font-weight: 600;
+  color: #f1f5f9;
+  font-size: 0.95rem;
+}
+
+/* Mnemonic Grid */
+.mnemonic-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  font-size: 0.88rem;
+  background: rgba(15, 20, 35, 0.7);
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.mnem-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  color: #cbd5e1;
+}
+
+.mnem-item.highlighted {
+  background: rgba(245, 196, 67, 0.25);
+  color: #fff;
+  font-weight: 700;
+}
+
+.m-num {
+  font-weight: 800;
+  color: var(--gold-accent);
+  width: 22px;
+}
+
+.m-em {
+  font-size: 1.1rem;
+}
+
+.shortcuts-list {
+  list-style: none;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shortcuts-list strong {
+  color: #e2e8f0;
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
