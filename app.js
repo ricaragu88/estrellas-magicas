@@ -28,17 +28,8 @@
   let currentIndex = 0;
   const totalSlides = slides.length;
 
-  // Transition Lock & Debounce (prevents double skipping)
+  // Strict transition lock to prevent double skipping
   let isNavigating = false;
-  let lastTouchTime = 0;
-
-  // Touch / Swipe Tracking Variables
-  let touchStartX = 0;
-  let touchStartY = 0;
-  let touchEndX = 0;
-  let touchEndY = 0;
-  let touchStartTime = 0;
-  let isSwiping = false;
 
   // Wake Lock reference to prevent screen dimming
   let wakeLock = null;
@@ -64,9 +55,9 @@
 
   // --- Slide Navigation ---
   function goToSlide(index) {
-    if (isNavigating) return; // Prevent double-triggering
+    if (isNavigating) return; // Ignore any taps while moving!
     isNavigating = true;
-    setTimeout(() => { isNavigating = false; }, 380);
+    setTimeout(() => { isNavigating = false; }, 420);
 
     if (index < 0) index = 0;
     if (index >= totalSlides) index = 0; // Loop back to start
@@ -183,32 +174,30 @@
   });
 
   // --- Secret Top Zones Listeners ---
-  zoneBack.addEventListener('click', (e) => {
+  zoneBack.addEventListener('pointerup', (e) => {
     e.stopPropagation();
     prevSlide();
   });
 
-  zoneFullscreen.addEventListener('click', (e) => {
+  zoneFullscreen.addEventListener('pointerup', (e) => {
     e.stopPropagation();
     toggleFullscreen();
   });
 
-  zoneCheat.addEventListener('click', (e) => {
+  zoneCheat.addEventListener('pointerup', (e) => {
     e.stopPropagation();
     toggleCheatSheet();
   });
 
   // Long press on top-right also opens cheat sheet
   let longPressTimer = null;
-  zoneCheat.addEventListener('touchstart', (e) => {
-    lastTouchTime = Date.now();
+  zoneCheat.addEventListener('pointerdown', (e) => {
     longPressTimer = setTimeout(() => {
       openCheatSheet();
     }, 450);
-  }, { passive: true });
+  });
 
-  zoneCheat.addEventListener('touchend', () => {
-    lastTouchTime = Date.now();
+  zoneCheat.addEventListener('pointerup', () => {
     clearTimeout(longPressTimer);
   });
 
@@ -217,60 +206,54 @@
     closeCheatSheet();
   });
 
-  // --- Main Viewport Tap & Swipe Handling ---
-  viewport.addEventListener('touchstart', (e) => {
-    if (cheatDrawer.classList.contains('open')) return;
-    lastTouchTime = Date.now();
-    touchStartX = e.changedTouches[0].clientX;
-    touchStartY = e.changedTouches[0].clientY;
-    touchStartTime = Date.now();
-    isSwiping = false;
-  }, { passive: true });
+  // --- UNIFIED POINTER EVENTS (Solves mobile double-tap permanently) ---
+  let ptrStartX = 0;
+  let ptrStartY = 0;
+  let ptrStartTime = 0;
+  let ptrMoved = false;
 
-  viewport.addEventListener('touchmove', (e) => {
+  viewport.addEventListener('pointerdown', (e) => {
     if (cheatDrawer.classList.contains('open')) return;
-    const currentX = e.changedTouches[0].clientX;
-    const currentY = e.changedTouches[0].clientY;
-    if (Math.abs(currentX - touchStartX) > 12 || Math.abs(currentY - touchStartY) > 12) {
-      isSwiping = true;
+    if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart')) return;
+
+    ptrStartX = e.clientX;
+    ptrStartY = e.clientY;
+    ptrStartTime = Date.now();
+    ptrMoved = false;
+  });
+
+  viewport.addEventListener('pointermove', (e) => {
+    if (Math.abs(e.clientX - ptrStartX) > 12 || Math.abs(e.clientY - ptrStartY) > 12) {
+      ptrMoved = true;
     }
-  }, { passive: true });
+  });
 
-  viewport.addEventListener('touchend', (e) => {
+  viewport.addEventListener('pointerup', (e) => {
     if (cheatDrawer.classList.contains('open')) return;
-    lastTouchTime = Date.now();
-    touchEndX = e.changedTouches[0].clientX;
-    touchEndY = e.changedTouches[0].clientY;
-    const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
-    const deltaTime = Date.now() - touchStartTime;
+    if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart')) return;
 
-    // Detect horizontal swipe
-    if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4 && deltaTime < 400) {
+    const deltaX = e.clientX - ptrStartX;
+    const deltaY = e.clientY - ptrStartY;
+    const deltaTime = Date.now() - ptrStartTime;
+
+    // 1. Detect Swipe (Horizontal drag)
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3 && deltaTime < 450) {
       if (deltaX < 0) {
-        nextSlide(); // Swiped left -> next
+        nextSlide(); // swipe left -> next
       } else {
-        prevSlide(); // Swiped right -> prev
+        prevSlide(); // swipe right -> prev
       }
       return;
     }
 
-    // Standard single tap advances one by one
-    if (!isSwiping && deltaTime < 350) {
+    // 2. Detect Tap (short duration, minimal movement)
+    if (!ptrMoved && deltaTime < 350) {
       // Don't trigger if click was near top secret zones
-      if (touchStartY > 75) {
+      if (ptrStartY > 75) {
         nextSlide();
         requestWakeLock();
       }
     }
-  }, { passive: true });
-
-  // Fallback click for desktop mouse only (ignores synthesized mobile touch clicks)
-  viewport.addEventListener('click', (e) => {
-    if (cheatDrawer.classList.contains('open')) return;
-    if (Date.now() - lastTouchTime < 600) return; // Ignore mobile synthesized clicks!
-    if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart')) return;
-    nextSlide();
   });
 
   // Restart Button on Slide 5
@@ -300,10 +283,12 @@
   goToSlide(0);
   requestWakeLock();
 
-  // Register PWA Service Worker for 100% offline usage
+  // Register PWA Service Worker with auto-update
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(err => {
+      navigator.serviceWorker.register('sw.js').then((reg) => {
+        reg.update();
+      }).catch(err => {
         console.log('SW registration error:', err);
       });
     });
