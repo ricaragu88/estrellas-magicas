@@ -1,4 +1,4 @@
-const CACHE_NAME = 'estrellas-magicas-v6';
+const CACHE_NAME = 'estrellas-magicas-v7';
 const ASSETS_TO_CACHE = [
   './',
   'index.html',
@@ -12,6 +12,8 @@ const ASSETS_TO_CACHE = [
   'assets/04_estrella_pulpo.png',
   'assets/icon-192.png',
   'assets/icon-512.png',
+  'assets/icon-maskable-192.png',
+  'assets/icon-maskable-512.png',
   'assets/apple-touch-icon.png'
 ];
 
