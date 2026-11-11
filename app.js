@@ -214,7 +214,7 @@
 
   viewport.addEventListener('pointerdown', (e) => {
     if (cheatDrawer.classList.contains('open')) return;
-    if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart')) return;
+    if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart') || e.target.closest('#btnInstallApp')) return;
 
     ptrStartX = e.clientX;
     ptrStartY = e.clientY;
@@ -230,7 +230,7 @@
 
   viewport.addEventListener('pointerup', (e) => {
     if (cheatDrawer.classList.contains('open')) return;
-    if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart')) return;
+    if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart') || e.target.closest('#btnInstallApp')) return;
 
     const deltaX = e.clientX - ptrStartX;
     const deltaY = e.clientY - ptrStartY;
@@ -278,6 +278,114 @@
       closeCheatSheet();
     }
   });
+
+  // --- In-App Browser Detection (WhatsApp / Telegram) ---
+  const ua = navigator.userAgent || '';
+  const isInApp = /WhatsApp|Telegram|Instagram|FBAN|FBAV/i.test(ua);
+  const inAppWarning = document.getElementById('inAppWarning');
+  const btnCloseBanner = document.getElementById('btnCloseBanner');
+  if (isInApp && inAppWarning) {
+    inAppWarning.style.display = 'flex';
+  }
+  if (btnCloseBanner) {
+    btnCloseBanner.addEventListener('click', (e) => {
+      e.stopPropagation();
+      inAppWarning.style.display = 'none';
+    });
+  }
+
+  // --- In-App Install Prompt Handling ---
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const btnInstallApp = document.getElementById('btnInstallApp');
+  const installModal = document.getElementById('installModal');
+  const installStepsContent = document.getElementById('installStepsContent');
+  const btnCloseInstallModal = document.getElementById('btnCloseInstallModal');
+  let deferredPrompt = null;
+
+  if (isStandalone && btnInstallApp) {
+    btnInstallApp.style.display = 'none';
+  }
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (!isStandalone && btnInstallApp) {
+      btnInstallApp.style.display = 'inline-flex';
+    }
+  });
+
+  function showInstallModal() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      installStepsContent.innerHTML = `
+        <div class="install-steps">
+          <div class="install-step-item">
+            <span class="step-num">1</span>
+            <span>Toca el botón <strong>Compartir</strong> <span style="font-size:1.1rem">⎋</span> (abajo en la barra de Safari).</span>
+          </div>
+          <div class="install-step-item">
+            <span class="step-num">2</span>
+            <span>Baja un poco y pulsa en <strong>«Añadir a la pantalla de inicio»</strong> ➕.</span>
+          </div>
+          <div class="install-step-item">
+            <span class="step-num">3</span>
+            <span>Pulsa en <strong>«Añadir»</strong> (arriba a la derecha en azul).</span>
+          </div>
+        </div>
+      `;
+    } else {
+      installStepsContent.innerHTML = `
+        <div class="install-steps">
+          <div class="install-step-item">
+            <span class="step-num">1</span>
+            <span>Toca los <strong>tres puntos (⋮)</strong> en la esquina superior de Chrome.</span>
+          </div>
+          <div class="install-step-item">
+            <span class="step-num">2</span>
+            <span>Selecciona <strong>«Instalar aplicación»</strong> o <strong>«Añadir a pantalla de inicio»</strong>.</span>
+          </div>
+          <div class="install-step-item">
+            <span class="step-num">💡</span>
+            <span><em>En Xiaomi/Redmi: Concede el permiso en Ajustes > Aplicaciones > Chrome > Otros permisos > Accesos directos.</em></span>
+          </div>
+        </div>
+      `;
+    }
+    installModal.style.display = 'flex';
+    installModal.setAttribute('aria-hidden', 'false');
+  }
+
+  if (btnInstallApp) {
+    btnInstallApp.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          btnInstallApp.style.display = 'none';
+        }
+        deferredPrompt = null;
+      } else {
+        showInstallModal();
+      }
+    });
+  }
+
+  if (btnCloseInstallModal) {
+    btnCloseInstallModal.addEventListener('click', (e) => {
+      e.stopPropagation();
+      installModal.style.display = 'none';
+      installModal.setAttribute('aria-hidden', 'true');
+    });
+  }
+
+  if (installModal) {
+    installModal.addEventListener('click', (e) => {
+      if (e.target === installModal) {
+        installModal.style.display = 'none';
+      }
+    });
+  }
 
   // Initialize
   goToSlide(0);

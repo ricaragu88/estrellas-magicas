@@ -16,11 +16,17 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=20261111_4">
+  <link rel="stylesheet" href="style.css?v=20261111_5">
 </head>
 <body>
   <div id="app" class="app-container">
     
+    <!-- In-App Browser Warning Banner (WhatsApp, Telegram) -->
+    <div class="inapp-warning-banner" id="inAppWarning" style="display: none;">
+      <span>⚠️ Estás dentro de WhatsApp. Toca los <strong>3 puntos (⋮)</strong> arriba y pulsa <strong>«Abrir en Chrome/Safari»</strong> para poder instalar la App.</span>
+      <button type="button" class="btn-close-banner" id="btnCloseBanner">✕</button>
+    </div>
+
     <!-- Secret Tap Zones for the Magician (Invisible during show) -->
     <div class="secret-tap-zone top-left" id="zoneBack" title="Retroceder"></div>
     <div class="secret-tap-zone top-center" id="zoneFullscreen" title="Pantalla Completa"></div>
@@ -35,9 +41,14 @@
           <div class="card-wrapper cover-card-wrapper">
             <img src="assets/00_portada.jpg" alt="Los Emojis Mágicos - El Gran Alexander" class="slide-img cover-img" draggable="false">
           </div>
-          <div class="slide-caption">
-            <span class="caption-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; font-weight: 800;">✨ SHOW</span>
-            <p>Toca la pantalla para comenzar</p>
+          <div class="cover-actions">
+            <div class="slide-caption">
+              <span class="caption-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; font-weight: 800;">✨ SHOW</span>
+              <p>Toca la pantalla para comenzar</p>
+            </div>
+            <button type="button" class="btn-install-cover" id="btnInstallApp">
+              <span>📲 Instalar App en el móvil</span>
+            </button>
           </div>
         </section>
 
@@ -126,6 +137,15 @@
       <span class="dot" data-index="6"></span>
     </div>
 
+    <!-- Installation Instructions Modal -->
+    <div class="install-modal" id="installModal" aria-hidden="true" style="display: none;">
+      <div class="install-modal-content">
+        <button type="button" class="btn-close-modal" id="btnCloseInstallModal">✕</button>
+        <h3>📲 Instalar en tu móvil</h3>
+        <div id="installStepsContent"></div>
+      </div>
+    </div>
+
     <!-- Hidden Magician Cheat Sheet / Copilot Drawer -->
     <aside class="cheat-sheet-drawer" id="cheatDrawer" aria-hidden="true">
       <div class="drawer-header">
@@ -202,6 +222,6 @@
 
   </div>
 
-  <script src="app.js?v=20261111_4"></script>
+  <script src="app.js?v=20261111_5"></script>
 </body>
 </html>
