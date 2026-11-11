@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "El Código de las Estrellas",
-  "short_name": "Estrellas",
-  "description": "App mágica de mentalismo y lectura de mente para el Congreso Infantil por Alex El Mago.",
+  "name": "Los Emojis Mágicos - El Gran Alexander",
+  "short_name": "Emojis Mágicos",
+  "description": "App mágica de mentalismo y lectura de mente para el Congreso Infantil por El Gran Alexander.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

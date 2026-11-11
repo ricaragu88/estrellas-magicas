@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>El Código de las Estrellas - Alex El Mago</title>
+  <title>Los Emojis Mágicos - El Gran Alexander</title>
   
   <!-- PWA Meta Tags -->
   <meta name="theme-color" content="#0a0b14">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Estrellas Mágicas">
+  <meta name="apple-mobile-web-app-title" content="Emojis Mágicos">
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="manifest.webmanifest">
   
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=20261111_3">
+  <link rel="stylesheet" href="style.css?v=20261111_4">
 </head>
 <body>
   <div id="app" class="app-container">
@@ -30,8 +30,19 @@
     <div class="carousel-viewport" id="viewport">
       <div class="slides-track" id="slidesTrack">
         
-        <!-- Slide 0: Cuadrícula de 15 Emojis -->
+        <!-- Slide 0: Portada Personalizada El Gran Alexander -->
         <section class="slide active" data-index="0" id="slide-0">
+          <div class="card-wrapper cover-card-wrapper">
+            <img src="assets/00_portada.jpg" alt="Los Emojis Mágicos - El Gran Alexander" class="slide-img cover-img" draggable="false">
+          </div>
+          <div class="slide-caption">
+            <span class="caption-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; font-weight: 800;">✨ SHOW</span>
+            <p>Toca la pantalla para comenzar</p>
+          </div>
+        </section>
+
+        <!-- Slide 1: Cuadrícula de 15 Emojis -->
+        <section class="slide" data-index="1" id="slide-1">
           <div class="card-wrapper grid-card-wrapper">
             <img src="assets/00_cuadricula.png" alt="Cuadrícula de 15 emoticonos" class="slide-img grid-img" draggable="false">
           </div>
@@ -41,8 +52,8 @@
           </div>
         </section>
 
-        <!-- Slide 1: Estrella 1 (Vela / Base 1) -->
-        <section class="slide" data-index="1" id="slide-1">
+        <!-- Slide 2: Estrella 1 (Vela / Base 1) -->
+        <section class="slide" data-index="2" id="slide-2">
           <div class="card-wrapper star-card-wrapper">
             <img src="assets/01_estrella_vela.png" alt="Estrella Base 1 - Vela" class="slide-img star-img" draggable="false">
           </div>
@@ -52,8 +63,8 @@
           </div>
         </section>
 
-        <!-- Slide 2: Estrella 2 (Enamorado / Base 2) -->
-        <section class="slide" data-index="2" id="slide-2">
+        <!-- Slide 3: Estrella 2 (Enamorado / Base 2) -->
+        <section class="slide" data-index="3" id="slide-3">
           <div class="card-wrapper star-card-wrapper">
             <img src="assets/02_estrella_enamorado.png" alt="Estrella Base 2 - Enamorado" class="slide-img star-img" draggable="false">
           </div>
@@ -63,8 +74,8 @@
           </div>
         </section>
 
-        <!-- Slide 3: Estrella 3 (Trébol / Base 4) -->
-        <section class="slide" data-index="3" id="slide-3">
+        <!-- Slide 4: Estrella 3 (Trébol / Base 4) -->
+        <section class="slide" data-index="4" id="slide-4">
           <div class="card-wrapper star-card-wrapper">
             <img src="assets/03_estrella_trebol.png" alt="Estrella Base 4 - Trébol" class="slide-img star-img" draggable="false">
           </div>
@@ -74,8 +85,8 @@
           </div>
         </section>
 
-        <!-- Slide 4: Estrella 4 (Pulpo / Base 8) -->
-        <section class="slide" data-index="4" id="slide-4">
+        <!-- Slide 5: Estrella 4 (Pulpo / Base 8) -->
+        <section class="slide" data-index="5" id="slide-5">
           <div class="card-wrapper star-card-wrapper">
             <img src="assets/04_estrella_pulpo.png" alt="Estrella Base 8 - Pulpo" class="slide-img star-img" draggable="false">
           </div>
@@ -85,8 +96,8 @@
           </div>
         </section>
 
-        <!-- Slide 5: Revelación / Telepatía -->
-        <section class="slide reveal-slide" data-index="5" id="slide-5">
+        <!-- Slide 6: Revelación / Telepatía -->
+        <section class="slide reveal-slide" data-index="6" id="slide-6">
           <div class="card-wrapper reveal-wrapper">
             <div class="telepathy-glow">
               <div class="magic-sparkles"></div>
@@ -112,6 +123,7 @@
       <span class="dot" data-index="3"></span>
       <span class="dot" data-index="4"></span>
       <span class="dot" data-index="5"></span>
+      <span class="dot" data-index="6"></span>
     </div>
 
     <!-- Hidden Magician Cheat Sheet / Copilot Drawer -->
@@ -190,6 +202,6 @@
 
   </div>
 
-  <script src="app.js?v=20261111_3"></script>
+  <script src="app.js?v=20261111_4"></script>
 </body>
 </html>

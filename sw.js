@@ -1,10 +1,11 @@
-const CACHE_NAME = 'estrellas-magicas-v7';
+const CACHE_NAME = 'estrellas-magicas-v8';
 const ASSETS_TO_CACHE = [
   './',
   'index.html',
   'style.css',
   'app.js',
   'manifest.webmanifest',
+  'assets/00_portada.jpg',
   'assets/00_cuadricula.png',
   'assets/01_estrella_vela.png',
   'assets/02_estrella_enamorado.png',
