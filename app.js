@@ -206,55 +206,79 @@
     closeCheatSheet();
   });
 
-  // --- UNIFIED POINTER EVENTS (Solves mobile double-tap permanently) ---
+  // --- UNIFIED POINTER EVENTS (Touch swipe & tap handler) ---
   let ptrStartX = 0;
   let ptrStartY = 0;
+  let ptrCurrentX = 0;
+  let ptrCurrentY = 0;
   let ptrStartTime = 0;
   let ptrMoved = false;
+  let isPointerActive = false;
 
   viewport.addEventListener('pointerdown', (e) => {
     if (cheatDrawer.classList.contains('open')) return;
     if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart') || e.target.closest('#btnInstallApp')) return;
 
+    isPointerActive = true;
     ptrStartX = e.clientX;
     ptrStartY = e.clientY;
+    ptrCurrentX = e.clientX;
+    ptrCurrentY = e.clientY;
     ptrStartTime = Date.now();
     ptrMoved = false;
+
+    try {
+      viewport.setPointerCapture(e.pointerId);
+    } catch (_) {}
   });
 
   viewport.addEventListener('pointermove', (e) => {
-    if (Math.abs(e.clientX - ptrStartX) > 12 || Math.abs(e.clientY - ptrStartY) > 12) {
+    if (!isPointerActive) return;
+    ptrCurrentX = e.clientX;
+    ptrCurrentY = e.clientY;
+    if (Math.abs(ptrCurrentX - ptrStartX) > 8 || Math.abs(ptrCurrentY - ptrStartY) > 8) {
       ptrMoved = true;
     }
   });
 
-  viewport.addEventListener('pointerup', (e) => {
+  function handlePointerEnd(e) {
+    if (!isPointerActive) return;
+    isPointerActive = false;
+
+    try {
+      viewport.releasePointerCapture(e.pointerId);
+    } catch (_) {}
+
     if (cheatDrawer.classList.contains('open')) return;
     if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart') || e.target.closest('#btnInstallApp')) return;
 
-    const deltaX = e.clientX - ptrStartX;
-    const deltaY = e.clientY - ptrStartY;
+    const endX = (typeof e.clientX === 'number' && e.clientX !== 0) ? e.clientX : ptrCurrentX;
+    const endY = (typeof e.clientY === 'number' && e.clientY !== 0) ? e.clientY : ptrCurrentY;
+    const deltaX = endX - ptrStartX;
+    const deltaY = endY - ptrStartY;
     const deltaTime = Date.now() - ptrStartTime;
 
-    // 1. Detect Swipe (Horizontal drag)
-    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3 && deltaTime < 450) {
+    // 1. Detect Swipe (Horizontal drag of 25px or more)
+    if (Math.abs(deltaX) >= 25 && Math.abs(deltaX) >= Math.abs(deltaY) * 0.75) {
       if (deltaX < 0) {
-        nextSlide(); // swipe left -> next
+        nextSlide(); // Swiped left -> next
       } else {
-        prevSlide(); // swipe right -> prev
+        prevSlide(); // Swiped right -> prev
       }
       return;
     }
 
-    // 2. Detect Tap (short duration, minimal movement)
-    if (!ptrMoved && deltaTime < 350) {
-      // Don't trigger if click was near top secret zones
+    // 2. Detect Tap (minimal movement and quick release)
+    if (!ptrMoved && deltaTime < 450) {
       if (ptrStartY > 75) {
         nextSlide();
         requestWakeLock();
       }
     }
-  });
+  }
+
+  viewport.addEventListener('pointerup', handlePointerEnd);
+  viewport.addEventListener('pointercancel', handlePointerEnd);
 
   // Restart Button on Slide 5
   if (btnRestart) {

@@ -105,6 +105,7 @@ html, body {
   align-items: center;
   overflow: hidden;
   cursor: pointer;
+  touch-action: none;
 }
 
 .slides-track {
@@ -113,6 +114,7 @@ html, body {
   height: 100%;
   transition: var(--slide-transition);
   will-change: transform;
+  touch-action: none;
 }
 
 .slide {
@@ -126,6 +128,7 @@ html, body {
   padding: 10px 14px 44px 14px;
   position: relative;
   transition: opacity 0.3s ease;
+  touch-action: none;
 }
 
 /* Card and Image Wrappers */
