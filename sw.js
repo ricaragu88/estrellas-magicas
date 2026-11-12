@@ -1,4 +1,4 @@
-const CACHE_NAME = 'estrellas-magicas-v10';
+const CACHE_NAME = 'estrellas-magicas-v11';
 const ASSETS_TO_CACHE = [
   './',
   'index.html',

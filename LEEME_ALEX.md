@@ -1,51 +1,46 @@
-# 🌟 El Código de las Estrellas — Manual para Alex El Mago
-
-¡Hola Alex! Aquí tienes la aplicación diseñada especialmente para tu presentación en el **Congreso Infantil**.
+# 🌟 Los Emojis Mágicos — Manual de Alex (El Gran Alexander)
 
 ---
 
-## 📱 ¿Cómo funciona en Android e iPhone?
-Para que puedas usarla en **cualquier teléfono (Android o iPhone)** sin depender de tiendas de apps ni de conexión a internet durante el show:
+## 🎩 El Gran Secreto: Cálculo Automático Encubierto
 
-1. **En iPhone (Safari):**
-   - Abre la web en Safari.
-   - Toca el botón **Compartir** (icono de cuadrado con flecha hacia arriba).
-   - Elige **"Añadir a la pantalla de inicio"**.
-   - ¡Listo! Se creará un icono dorado con la estrella mágica en tu pantalla. Al pulsarla, se abre a **pantalla completa** sin barra de direcciones ni botones de Safari, como una app nativa.
+Ya no necesitas sumar mentalmente nada en el escenario ni preocuparte por la memoria. La aplicación cuenta y averigua el emoji elegido en secreto mientras tú haces el juego de forma natural.
 
-2. **En Android (Chrome):**
-   - Abre la web en Chrome.
-   - Toca el menú de los 3 puntos (o el aviso que saldrá abajo).
-   - Pulsa **"Instalar aplicación"** o **"Añadir a la pantalla de inicio"**.
-   - Se abrirá a **pantalla completa** como si fuera un APK instalado, sin interfaz de Chrome.
+### ¿Cómo funciona en el escenario?
 
-3. **100% Offline:**
-   - La app incorpora tecnología PWA con *Service Worker*. Tras abrirla una sola vez, queda guardada en la memoria del teléfono y funciona en **Modo Avión** o en auditorios sin cobertura.
+1. **Paso 0 (Portada) y Paso 1 (Cuadrícula):**
+   * Pides al niño que memorice un emoji de la cuadrícula.
+   * Tocas o deslizas para pasar a la primera estrella.
 
----
+2. **En las 4 Estrellas (El secreto del mago):**
+   * Si el niño dice **«SÍ»** (su emoji aparece en la estrella) ➔ **TOCA LA PANTALLA** para avanzar.
+     *(La app suma esa estrella en secreto).*
+   * Si el niño dice **«NO»** (su emoji no está en la estrella) ➔ **DESLIZA A LA IZQUIERDA** con el dedo para avanzar.
+     *(La app suma 0 y pasa a la siguiente).*
 
-## 🎩 En el Escenario (Manejo Durante el Truco)
-
-### Flujo Natural del Show:
-1. **Diapositiva 0 (Cuadrícula 15 emojis):** Pides a un niño que mire la pantalla y elija un símbolo en secreto.
-2. **Diapositiva 1 (Estrella 1 - Vela):** "¿Está tu símbolo aquí?"
-3. **Diapositiva 2 (Estrella 2 - Enamorados):** "¿Y en esta?"
-4. **Diapositiva 3 (Estrella 3 - Trébol):** "¿Y aquí?"
-5. **Diapositiva 4 (Estrella 4 - Pulpo):** "¿Y en esta última?"
-6. **Diapositiva 5 (Revelación):** Pantalla de telepatía y concentración mágica mientras revelas el símbolo. Incluye un botón discreto para reiniciar y repetir el juego con otro niño.
+3. **¡Para el público es idéntico!**
+   Tanto si tocas como si deslizas a la izquierda, la pantalla hace exactamente la misma transición fluida a la siguiente tarjeta. Nadie sospechará jamás nada.
 
 ---
 
-## 🤫 Zonas Secretas de Control para el Mago
-En la parte superior de la pantalla hay 3 zonas invisibles para el público que te dan control total:
+## 🔮 Cómo ver el resultado final (Tienes 2 opciones)
 
-* **Tocar en cualquier parte de la pantalla:** Avanza a la siguiente estrella.
-* **Esquina superior izquierda (invisible):** Retrocede una tarjeta (por si te saltas una o el niño rectifica).
-* **Zona superior central (invisible):** Activa/desactiva la **Pantalla Completa** real del móvil.
-* **Esquina superior derecha (invisible):** Abre el **Asistente Secreto del Mago**.
-  * Si mantienes pulsada esa esquina o la tocas, se despliega una pantalla con:
-    * **Calculador binario interactivo:** Tocas los botones de las estrellas donde dijo "SÍ" (+1, +2, +4, +8) y la app te muestra al instante la suma exacta y el emoji resultante.
-    * **Tabla mnemotécnica completa:** La chuleta con los 15 números y sus reglas por si tienes un despiste de memoria en el escenario.
-    * Para cerrarlo discretamente, pulsas la '✕' o tocas fuera.
-* **Deslizar (Swipe):** Puedes deslizar con el dedo a izquierda y derecha si prefieres el gesto de carrusel tradicional.
-* **Bloqueo de apagado (Wake Lock):** La pantalla **nunca se apagará** ni bajará de brillo mientras la app esté abierta.
+Al llegar a la pantalla final de **«¡Mente Conectada!»**, la app ya sabe con exactitud matemática el emoji elegido:
+
+* **Opción 1: El Chivato en Pantalla (Sin abrir menús)**
+  * Toca la **bola de cristal 🔮** que brilla en el centro de la pantalla.
+  * La frase cambiará discretamente a: `🔮 [EMOJI] [Nombre del símbolo]`.
+  * Se apaga sola a los 4 segundos (o si la vuelves a tocar). ¡Te permite mirarlo disimuladamente mientras concentras la mente frente al público!
+
+* **Opción 2: El Asistente Secreto (Arriba a la derecha)**
+  * Toca la esquina superior derecha (arriba del todo).
+  * Se abre el panel del mago: los botones `+1`, `+2`, `+4`, `+8` ya estarán pulsados solos según tus toques y deslizamientos, mostrándote la suma exacta y la mnemotecnia.
+
+---
+
+## 📱 Instalación en el Móvil
+
+* Enlace oficial: **https://ricaragu88.github.io/estrellas-magicas/**
+* Abre el enlace en **Chrome** (Android) o **Safari** (iPhone) — *(si lo abres dentro de WhatsApp, pulsa los 3 puntos arriba a la derecha y elige "Abrir en Chrome/Safari")*.
+* En la portada verás el botón verde: **`📲 Instalar App en el móvil`**.
+* Se instalará con el cartel y el icono del mago Alexander, a pantalla completa y funcionando **100% sin internet** en cualquier teatro.

@@ -1,5 +1,5 @@
 /**
- * El Código de las Estrellas - App del Mago
+ * Los Emojis Mágicos - El Gran Alexander
  * Presentación interactiva de magia y mentalismo para Congreso Infantil
  */
 
@@ -24,6 +24,12 @@
   const solverSymbol = document.getElementById('solverSymbol');
   const solverName = document.getElementById('solverName');
   const mnemItems = Array.from(document.querySelectorAll('.mnem-item'));
+
+  // Reveal Slide Elements
+  const telepathyGlow = document.getElementById('telepathyGlow');
+  const revealSubtitle = document.getElementById('revealSubtitle');
+  const defaultSubtitleText = 'Sé exactamente el emoji que has elegido';
+  let peekTimer = null;
 
   let currentIndex = 0;
   const totalSlides = slides.length;
@@ -53,9 +59,45 @@
     15: { emoji: '👱‍♀️', name: 'Quinceañera (15 años)' }
   };
 
+  // --- Covert Dual-Input Mentalism Engine ---
+  // Slide 2: Estrella 1 (Vela · Base 1)
+  // Slide 3: Estrella 2 (Enamorado · Base 2)
+  // Slide 4: Estrella 3 (Trébol · Base 4)
+  // Slide 5: Estrella 4 (Pulpo · Base 8)
+  const STAR_BASES = {
+    2: 1,
+    3: 2,
+    4: 4,
+    5: 8
+  };
+  let answers = { 1: false, 2: false, 4: false, 8: false };
+
+  function registerStarAnswer(isYes) {
+    if (STAR_BASES[currentIndex] !== undefined) {
+      const base = STAR_BASES[currentIndex];
+      answers[base] = isYes;
+    }
+  }
+
+  function undoLastAnswer() {
+    const prevIndex = currentIndex - 1;
+    if (STAR_BASES[prevIndex] !== undefined) {
+      const base = STAR_BASES[prevIndex];
+      answers[base] = false;
+    }
+  }
+
+  function getCalculatedSum() {
+    let sum = 0;
+    for (const [base, isYes] of Object.entries(answers)) {
+      if (isYes) sum += parseInt(base, 10);
+    }
+    return sum;
+  }
+
   // --- Slide Navigation ---
   function goToSlide(index) {
-    if (isNavigating) return; // Ignore any taps while moving!
+    if (isNavigating) return;
     isNavigating = true;
     setTimeout(() => { isNavigating = false; }, 420);
 
@@ -64,6 +106,27 @@
 
     currentIndex = index;
     slidesTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+    // Reset answers if returning to Cover or Grid
+    if (currentIndex === 0 || currentIndex === 1) {
+      answers = { 1: false, 2: false, 4: false, 8: false };
+      baseToggles.forEach(btn => btn.classList.remove('active'));
+      updateBinarySolver();
+      if (revealSubtitle) {
+        clearTimeout(peekTimer);
+        revealSubtitle.textContent = defaultSubtitleText;
+        revealSubtitle.classList.remove('showing-peek');
+      }
+    }
+
+    // Auto-sync solver when reaching reveal slide (6)
+    if (currentIndex === 6) {
+      baseToggles.forEach(btn => {
+        const val = parseInt(btn.dataset.val, 10);
+        btn.classList.toggle('active', !!answers[val]);
+      });
+      updateBinarySolver();
+    }
 
     // Update active slide class
     slides.forEach((slide, i) => {
@@ -76,11 +139,17 @@
     });
   }
 
+  function nextSlideWithAnswer(isYes) {
+    registerStarAnswer(isYes);
+    goToSlide(currentIndex + 1);
+  }
+
   function nextSlide() {
     goToSlide(currentIndex + 1);
   }
 
   function prevSlide() {
+    undoLastAnswer();
     goToSlide(currentIndex - 1);
   }
 
@@ -116,6 +185,13 @@
 
   // --- Cheat Sheet / Magician Copilot ---
   function openCheatSheet() {
+    // Ensure solver is synced with latest answers
+    baseToggles.forEach(btn => {
+      const val = parseInt(btn.dataset.val, 10);
+      btn.classList.toggle('active', !!answers[val]);
+    });
+    updateBinarySolver();
+
     cheatDrawer.classList.add('open');
     cheatDrawer.setAttribute('aria-hidden', 'false');
   }
@@ -169,6 +245,8 @@
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       btn.classList.toggle('active');
+      const val = parseInt(btn.dataset.val, 10);
+      answers[val] = btn.classList.contains('active');
       updateBinarySolver();
     });
   });
@@ -206,6 +284,35 @@
     closeCheatSheet();
   });
 
+  // --- Covert On-Screen Peek on Slide 6 (Crystal Ball) ---
+  if (telepathyGlow && revealSubtitle) {
+    telepathyGlow.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const currentSum = getCalculatedSum();
+
+      if (revealSubtitle.classList.contains('showing-peek')) {
+        // Toggle back off
+        clearTimeout(peekTimer);
+        revealSubtitle.textContent = defaultSubtitleText;
+        revealSubtitle.classList.remove('showing-peek');
+      } else {
+        // Show covert peek
+        revealSubtitle.classList.add('showing-peek');
+        if (currentSum > 0 && MNEMONIC_DATA[currentSum]) {
+          revealSubtitle.innerHTML = `<span style="color:var(--gold-accent); font-weight:800; font-size:1.15rem; text-shadow:0 0 12px rgba(245,196,67,0.5);">🔮 ${MNEMONIC_DATA[currentSum].emoji} ${MNEMONIC_DATA[currentSum].name}</span>`;
+        } else {
+          revealSubtitle.innerHTML = `<span style="color:#94a3b8; font-weight:600;">(Ninguna estrella afirmativa · 0)</span>`;
+        }
+        // Auto hide after 4.5 seconds
+        clearTimeout(peekTimer);
+        peekTimer = setTimeout(() => {
+          revealSubtitle.textContent = defaultSubtitleText;
+          revealSubtitle.classList.remove('showing-peek');
+        }, 4500);
+      }
+    });
+  }
+
   // --- UNIFIED POINTER EVENTS (Touch swipe & tap handler) ---
   let ptrStartX = 0;
   let ptrStartY = 0;
@@ -217,7 +324,7 @@
 
   viewport.addEventListener('pointerdown', (e) => {
     if (cheatDrawer.classList.contains('open')) return;
-    if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart') || e.target.closest('#btnInstallApp')) return;
+    if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart') || e.target.closest('#btnInstallApp') || e.target.closest('#telepathyGlow')) return;
 
     isPointerActive = true;
     ptrStartX = e.clientX;
@@ -250,7 +357,7 @@
     } catch (_) {}
 
     if (cheatDrawer.classList.contains('open')) return;
-    if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart') || e.target.closest('#btnInstallApp')) return;
+    if (e.target.closest('.secret-tap-zone') || e.target.closest('#btnRestart') || e.target.closest('#btnInstallApp') || e.target.closest('#telepathyGlow')) return;
 
     const endX = (typeof e.clientX === 'number' && e.clientX !== 0) ? e.clientX : ptrCurrentX;
     const endY = (typeof e.clientY === 'number' && e.clientY !== 0) ? e.clientY : ptrCurrentY;
@@ -261,9 +368,12 @@
     // 1. Detect Swipe (Horizontal drag of 25px or more)
     if (Math.abs(deltaX) >= 25 && Math.abs(deltaX) >= Math.abs(deltaY) * 0.75) {
       if (deltaX < 0) {
-        nextSlide(); // Swiped left -> next
+        // Swiped left -> NEXT SLIDE
+        // In the stars routine: SWIPING LEFT MEANS "NO" (+0)!
+        nextSlideWithAnswer(false);
       } else {
-        prevSlide(); // Swiped right -> prev
+        // Swiped right -> PREV SLIDE
+        prevSlide();
       }
       return;
     }
@@ -271,7 +381,9 @@
     // 2. Detect Tap (minimal movement and quick release)
     if (!ptrMoved && deltaTime < 450) {
       if (ptrStartY > 75) {
-        nextSlide();
+        // Tapped screen -> NEXT SLIDE
+        // In the stars routine: TAPPING MEANS "SÍ" (+Base)!
+        nextSlideWithAnswer(true);
         requestWakeLock();
       }
     }
@@ -280,18 +392,22 @@
   viewport.addEventListener('pointerup', handlePointerEnd);
   viewport.addEventListener('pointercancel', handlePointerEnd);
 
-  // Restart Button on Slide 5
+  // Restart Button on Slide 6
   if (btnRestart) {
     btnRestart.addEventListener('click', (e) => {
       e.stopPropagation();
-      goToSlide(0);
+      goToSlide(1); // Go to grid for the next kid
     });
   }
 
   // Keyboard navigation for rehearsal on laptop/PC
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
-      nextSlide();
+      nextSlideWithAnswer(true); // Default tap = YES
+    } else if (e.key === 's' || e.key === 'S' || e.key === 'y' || e.key === 'Y') {
+      nextSlideWithAnswer(true); // SÍ (+Base)
+    } else if (e.key === 'n' || e.key === 'N') {
+      nextSlideWithAnswer(false); // NO (+0)
     } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
       prevSlide();
     } else if (e.key === 'f' || e.key === 'F') {

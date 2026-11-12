@@ -16,7 +16,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=20261112_1">
+  <link rel="stylesheet" href="style.css?v=20261112_2">
 </head>
 <body>
   <div id="app" class="app-container">
@@ -110,12 +110,12 @@
         <!-- Slide 6: Revelación / Telepatía -->
         <section class="slide reveal-slide" data-index="6" id="slide-6">
           <div class="card-wrapper reveal-wrapper">
-            <div class="telepathy-glow">
+            <div class="telepathy-glow" id="telepathyGlow" title="Toca para ver el chivato secreto">
               <div class="magic-sparkles"></div>
               <div class="magic-eye-icon">🔮</div>
             </div>
             <h2 class="reveal-title">¡Mente Conectada!</h2>
-            <p class="reveal-subtitle">Sé exactamente el emoji que has elegido</p>
+            <p class="reveal-subtitle" id="revealSubtitle">Sé exactamente el emoji que has elegido</p>
             <button class="btn-restart" id="btnRestart">
               <span>Repetir con otro espectador</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -208,13 +208,13 @@
         </div>
 
         <div class="cheat-section">
-          <h4>Atajos y Control</h4>
+          <h4>Sistema Automático del Mago</h4>
           <ul class="shortcuts-list">
-            <li><strong>Tocar pantalla:</strong> Avanzar una a una</li>
-            <li><strong>Tocar esquina superior izq:</strong> Retroceder</li>
-            <li><strong>Tocar esquina superior centro:</strong> Pantalla completa (oculta barras)</li>
-            <li><strong>Tocar esquina superior der:</strong> Abrir/cerrar este panel</li>
-            <li><strong>Deslizar (Swipe):</strong> Izquierda / Derecha para cambiar</li>
+            <li><strong>Tocar pantalla (en estrella):</strong> El niño dice "SÍ" ➔ Suma la base y avanza</li>
+            <li><strong>Deslizar a izquierda (en estrella):</strong> El niño dice "NO" ➔ Suma 0 y avanza</li>
+            <li><strong>En pantalla final:</strong> La app ya tiene el emoji y la suma calculados solos</li>
+            <li><strong>Tocar la bola 🔮 al final:</strong> Muestra el emoji directamente en pantalla por 4s</li>
+            <li><strong>Esquina sup. der:</strong> Abrir/cerrar esta chuleta</li>
           </ul>
         </div>
       </div>
@@ -222,6 +222,6 @@
 
   </div>
 
-  <script src="app.js?v=20261112_1"></script>
+  <script src="app.js?v=20261112_2"></script>
 </body>
 </html>
