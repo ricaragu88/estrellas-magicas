@@ -32,9 +32,13 @@ Al llegar a la pantalla final de **«¡Mente Conectada!»**, la app ya sabe con 
   * La frase cambiará discretamente a: `🔮 [EMOJI] [Nombre del símbolo]`.
   * Se apaga sola a los 4 segundos (o si la vuelves a tocar). ¡Te permite mirarlo disimuladamente mientras concentras la mente frente al público!
 
-* **Opción 2: El Asistente Secreto (Arriba a la derecha)**
-  * Toca la esquina superior derecha (arriba del todo).
-  * Se abre el panel del mago: los botones `+1`, `+2`, `+4`, `+8` ya estarán pulsados solos según tus toques y deslizamientos, mostrándote la suma exacta y la mnemotecnia.
+* **Opción 2: El Asistente del Mago (Arriba a la derecha)**
+  * **1 toque en la esquina superior derecha (Cualquiera/Público):** Se abre el Asistente del Mago limpio. Permite a los niños y asistentes pulsar las tarjetas `+1`, `+2`, `+4`, `+8` para sumar y descubrir el emoji resultante, además de consultar la tabla de los 15 símbolos.
+  * **5 toques rápidos seguidos (Solo para Alex):** Se activa el **Modo Mago y Administrador**:
+    * Muestra la explicación de los gestos automáticos encubiertos (tocar vs deslizar).
+    * Activa el chivato en la bola de cristal 🔮.
+    * Muestra el panel de **Gestión de Códigos** para repartir accesos y probar la pantalla de bloqueo (PIN maestro: `ALEX2026`).
+    * Una vez introducido el PIN en tu móvil, queda guardado para siempre como "Móvil de Alex" (y si quieres prestárselo a un niño, solo tienes que pulsar *«Salir de Modo Mago»*).
 
 ---
 

@@ -91,6 +91,7 @@ html, body {
 .secret-tap-zone.top-right {
   right: 0;
   width: 25%;
+  z-index: 350;
 }
 
 /* --------------------------------------------------------

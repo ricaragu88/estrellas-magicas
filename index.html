@@ -16,7 +16,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=20261114_1">
+  <link rel="stylesheet" href="style.css?v=20261114_2">
 </head>
 <body>
   <div id="app" class="app-container">
@@ -177,7 +177,7 @@
     <!-- Hidden Magician Cheat Sheet / Copilot Drawer -->
     <aside class="cheat-sheet-drawer" id="cheatDrawer" aria-hidden="true">
       <div class="drawer-header">
-        <h3>🧙‍♂️ Asistente Secreto del Mago</h3>
+        <h3 id="drawerHeaderTitle" title="Toca 5 veces para acceso maestro">🧙‍♂️ Asistente del Mago</h3>
         <button class="btn-close-drawer" id="btnCloseCheat">✕</button>
       </div>
       
@@ -235,7 +235,8 @@
           </div>
         </div>
 
-        <div class="cheat-section">
+        <!-- Magician Automatic Gestures (Visible only in Magician Mode) -->
+        <div class="cheat-section" id="magicianSecretsSection" style="display: none;">
           <h4>Sistema Automático del Mago</h4>
           <ul class="shortcuts-list">
             <li><strong>Tocar pantalla (en estrella):</strong> El niño dice "SÍ" ➔ Suma la base y avanza</li>
@@ -246,8 +247,8 @@
           </ul>
         </div>
 
-        <!-- Admin / Codes Management Section for Alex -->
-        <div class="cheat-section admin-box" id="adminBox">
+        <!-- Admin / Codes Management Section for Alex (Visible only in Magician Mode) -->
+        <div class="cheat-section admin-box" id="adminBox" style="display: none;">
           <div class="admin-header-row">
             <h4>🔐 Gestión de Códigos (Para Alex)</h4>
             <span class="admin-status-pill" id="adminStatusPill">Cargando...</span>
@@ -287,6 +288,7 @@
             <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
               <button type="button" id="btnResetUsedCodes" class="btn-reset-codes" title="Reiniciar lista de entregados">Reiniciar contadores</button>
               <button type="button" id="btnLockThisDevice" class="btn-reset-codes" style="color:#f87171;" title="Bloquear este móvil para probar">Bloquear mi móvil</button>
+              <button type="button" id="btnExitMagicianMode" class="btn-reset-codes" style="color:#94a3b8;" title="Ocultar modo mago">🔒 Salir de Modo Mago</button>
             </div>
           </div>
         </div>
@@ -296,6 +298,6 @@
 
   </div>
 
-  <script src="app.js?v=20261114_1"></script>
+  <script src="app.js?v=20261114_2"></script>
 </body>
 </html>

@@ -262,22 +262,39 @@
     toggleFullscreen();
   });
 
+  // Track multi-taps for Alex Magician / Admin access
+  let cheatTapTimes = [];
+  function recordCheatTap() {
+    const now = Date.now();
+    cheatTapTimes.push(now);
+    cheatTapTimes = cheatTapTimes.filter(t => now - t <= 1800);
+
+    if (cheatTapTimes.length >= 5) {
+      cheatTapTimes = [];
+      triggerAlexMagicianAccess();
+      return true;
+    }
+    return false;
+  }
+
   zoneCheat.addEventListener('pointerup', (e) => {
     e.stopPropagation();
-    toggleCheatSheet();
+    const reachedFive = recordCheatTap();
+    if (!reachedFive) {
+      // Normal single tap opens/closes the assistant
+      if (cheatTapTimes.length === 1) {
+        toggleCheatSheet();
+      }
+    }
   });
 
-  // Long press on top-right also opens cheat sheet
-  let longPressTimer = null;
-  zoneCheat.addEventListener('pointerdown', (e) => {
-    longPressTimer = setTimeout(() => {
-      openCheatSheet();
-    }, 450);
-  });
-
-  zoneCheat.addEventListener('pointerup', () => {
-    clearTimeout(longPressTimer);
-  });
+  const drawerHeaderTitle = document.getElementById('drawerHeaderTitle');
+  if (drawerHeaderTitle) {
+    drawerHeaderTitle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      recordCheatTap();
+    });
+  }
 
   btnCloseCheat.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -290,6 +307,17 @@
       e.stopPropagation();
       const currentSum = getCalculatedSum();
 
+      if (!isMagician()) {
+        // In Spectator Mode: encourage using the assistant
+        clearTimeout(peekTimer);
+        revealSubtitle.textContent = '✨ ¡Mente Conectada! Abre el ayudante arriba para ver tu emoji.';
+        peekTimer = setTimeout(() => {
+          revealSubtitle.textContent = defaultSubtitleText;
+        }, 3500);
+        return;
+      }
+
+      // In Magician Mode: show covert peek
       if (revealSubtitle.classList.contains('showing-peek')) {
         // Toggle back off
         clearTimeout(peekTimer);
@@ -588,7 +616,7 @@
     return false;
   }
 
-  // Check URL params for testing (?test_lock=1, ?clear_lock=1)
+  // Check URL params for testing (?test_lock=1, ?clear_lock=1, ?admin=1)
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('test_lock') === '1') {
     sessionStorage.setItem('alex_test_lock', 'true');
@@ -596,6 +624,13 @@
     localStorage.removeItem('alex_unlocked');
     localStorage.removeItem('alex_unlocked_code');
     sessionStorage.removeItem('alex_test_lock');
+  }
+
+  if (urlParams.get('admin') === '1' || urlParams.get('mago') === '1') {
+    setTimeout(() => triggerAlexMagicianAccess(), 200);
+  } else if (urlParams.get('clear_mago') === '1') {
+    localStorage.removeItem('alex_is_magician');
+    sessionStorage.removeItem('alex_admin_logged');
   }
 
   // --- Lock UI Elements ---
@@ -718,15 +753,14 @@
       clearTimeout(lockTapTimer);
       if (lockTapCount >= 5) {
         lockTapCount = 0;
-        openCheatSheet();
-        showToast('🧙‍♂️ Menú Secreto de Alex Activado');
+        triggerAlexMagicianAccess();
       } else {
         lockTapTimer = setTimeout(() => { lockTapCount = 0; }, 1200);
       }
     });
   }
 
-  // --- Admin Section Logic inside Magician Drawer ---
+  // --- Magician Mode & Admin Panel System ---
   const adminStatusPill = document.getElementById('adminStatusPill');
   const adminPinGate = document.getElementById('adminPinGate');
   const adminPinInput = document.getElementById('adminPinInput');
@@ -742,6 +776,59 @@
   const codesChipsGrid = document.getElementById('codesChipsGrid');
   const btnResetUsedCodes = document.getElementById('btnResetUsedCodes');
   const btnLockThisDevice = document.getElementById('btnLockThisDevice');
+  const btnExitMagicianMode = document.getElementById('btnExitMagicianMode');
+
+  function isMagician() {
+    return localStorage.getItem('alex_is_magician') === 'true';
+  }
+
+  function setMagicianMode(active) {
+    if (active) {
+      localStorage.setItem('alex_is_magician', 'true');
+      sessionStorage.setItem('alex_admin_logged', 'true');
+    } else {
+      localStorage.removeItem('alex_is_magician');
+      sessionStorage.removeItem('alex_admin_logged');
+      sessionStorage.removeItem('temp_show_admin');
+    }
+    updateMagicianSectionsVisibility();
+    checkAdminSession();
+  }
+
+  function updateMagicianSectionsVisibility() {
+    const active = isMagician();
+    const magicianSecretsSection = document.getElementById('magicianSecretsSection');
+    const adminBox = document.getElementById('adminBox');
+
+    if (magicianSecretsSection) {
+      magicianSecretsSection.style.display = active ? 'block' : 'none';
+    }
+    if (adminBox) {
+      if (active || sessionStorage.getItem('temp_show_admin') === 'true') {
+        adminBox.style.display = 'block';
+      } else {
+        adminBox.style.display = 'none';
+      }
+    }
+  }
+
+  function triggerAlexMagicianAccess() {
+    if (isMagician()) {
+      showToast('🎩 Modo Mago Activo');
+      openCheatSheet();
+      updateMagicianSectionsVisibility();
+    } else {
+      sessionStorage.setItem('temp_show_admin', 'true');
+      updateMagicianSectionsVisibility();
+      openCheatSheet();
+      setTimeout(() => {
+        const adminBox = document.getElementById('adminBox');
+        if (adminBox) adminBox.scrollIntoView({ behavior: 'smooth' });
+        if (adminPinInput) adminPinInput.focus();
+      }, 350);
+      showToast('🎩 Acceso Maestro: Introduce el PIN de Alex');
+    }
+  }
 
   function getUsedCodes() {
     try {
@@ -838,7 +925,7 @@
   }
 
   function checkAdminSession() {
-    const isAdminLogged = sessionStorage.getItem('alex_admin_logged') === 'true';
+    const isAdminLogged = sessionStorage.getItem('alex_admin_logged') === 'true' || isMagician();
     if (isAdminLogged) {
       if (adminPinGate) adminPinGate.style.display = 'none';
       if (adminControlsPanel) adminControlsPanel.style.display = 'block';
@@ -848,16 +935,17 @@
       if (adminControlsPanel) adminControlsPanel.style.display = 'none';
     }
     updateAdminStatusPill();
+    updateMagicianSectionsVisibility();
   }
 
   if (btnAdminLogin && adminPinInput) {
     btnAdminLogin.addEventListener('click', () => {
       const pin = adminPinInput.value.trim().toUpperCase();
       if (pin === ADMIN_PIN || pin === 'ALEXANDER') {
-        sessionStorage.setItem('alex_admin_logged', 'true');
+        setMagicianMode(true);
         if (adminPinError) adminPinError.style.display = 'none';
         adminPinInput.value = '';
-        checkAdminSession();
+        showToast('✨ ¡Modo Mago activado permanentemente en este móvil!');
       } else {
         if (adminPinError) {
           adminPinError.style.display = 'block';
@@ -920,6 +1008,14 @@
       closeCheatSheet();
       updateLockScreenVisibility();
       showToast('🔒 Móvil bloqueado para prueba.');
+    });
+  }
+
+  if (btnExitMagicianMode) {
+    btnExitMagicianMode.addEventListener('click', () => {
+      setMagicianMode(false);
+      closeCheatSheet();
+      showToast('🔒 Has salido del Modo Mago (Modo Espectador activado).');
     });
   }
 
