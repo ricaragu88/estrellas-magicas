@@ -252,9 +252,47 @@
   });
 
   // --- Secret Top Zones Listeners ---
+  let topLeftTapTimes = [];
+  let topLeftHoldTimer = null;
+  let didHoldTrigger = false;
+
+  zoneBack.addEventListener('pointerdown', () => {
+    didHoldTrigger = false;
+    clearTimeout(topLeftHoldTimer);
+    topLeftHoldTimer = setTimeout(() => {
+      didHoldTrigger = true;
+      triggerAlexMagicianAccess();
+    }, 2200); // 2.2s hold also opens PIN modal
+  });
+
+  function recordTopLeftTap() {
+    const now = Date.now();
+    topLeftTapTimes.push(now);
+    topLeftTapTimes = topLeftTapTimes.filter(t => now - t <= 1800);
+
+    if (topLeftTapTimes.length >= 5) {
+      topLeftTapTimes = [];
+      triggerAlexMagicianAccess();
+      return true;
+    }
+    return false;
+  }
+
   zoneBack.addEventListener('pointerup', (e) => {
     e.stopPropagation();
-    prevSlide();
+    clearTimeout(topLeftHoldTimer);
+    if (didHoldTrigger) return;
+
+    const reachedFive = recordTopLeftTap();
+    if (!reachedFive) {
+      if (topLeftTapTimes.length === 1) {
+        prevSlide();
+      }
+    }
+  });
+
+  zoneBack.addEventListener('pointercancel', () => {
+    clearTimeout(topLeftHoldTimer);
   });
 
   zoneFullscreen.addEventListener('pointerup', (e) => {
@@ -262,37 +300,26 @@
     toggleFullscreen();
   });
 
-  // Track multi-taps for Alex Magician / Admin access
-  let cheatTapTimes = [];
-  function recordCheatTap() {
-    const now = Date.now();
-    cheatTapTimes.push(now);
-    cheatTapTimes = cheatTapTimes.filter(t => now - t <= 1800);
-
-    if (cheatTapTimes.length >= 5) {
-      cheatTapTimes = [];
-      triggerAlexMagicianAccess();
-      return true;
-    }
-    return false;
-  }
-
+  // Top-Right: Purely opens/closes the clean emoji helper (1 tap)
   zoneCheat.addEventListener('pointerup', (e) => {
     e.stopPropagation();
-    const reachedFive = recordCheatTap();
-    if (!reachedFive) {
-      // Normal single tap opens/closes the assistant
-      if (cheatTapTimes.length === 1) {
-        toggleCheatSheet();
-      }
-    }
+    toggleCheatSheet();
   });
 
+  // Inside the assistant drawer: tapping the title 5 times also triggers PIN modal
+  let titleTapTimes = [];
   const drawerHeaderTitle = document.getElementById('drawerHeaderTitle');
   if (drawerHeaderTitle) {
     drawerHeaderTitle.addEventListener('click', (e) => {
       e.stopPropagation();
-      recordCheatTap();
+      const now = Date.now();
+      titleTapTimes.push(now);
+      titleTapTimes = titleTapTimes.filter(t => now - t <= 1800);
+      if (titleTapTimes.length >= 5) {
+        titleTapTimes = [];
+        closeCheatSheet();
+        triggerAlexMagicianAccess();
+      }
     });
   }
 
