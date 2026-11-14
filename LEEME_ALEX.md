@@ -44,3 +44,27 @@ Al llegar a la pantalla final de **«¡Mente Conectada!»**, la app ya sabe con 
 * Abre el enlace en **Chrome** (Android) o **Safari** (iPhone) — *(si lo abres dentro de WhatsApp, pulsa los 3 puntos arriba a la derecha y elige "Abrir en Chrome/Safari")*.
 * En la portada verás el botón verde: **`📲 Instalar App en el móvil`**.
 * Se instalará con el cartel y el icono del mago Alexander, a pantalla completa y funcionando **100% sin internet** en cualquier teatro.
+
+---
+
+## 🔐 Control de Acceso y Códigos Únicos para el Público
+
+### 1. ¿Cómo funciona el acceso hoy y esta noche?
+* **Hoy sábado (hasta las 23:59:59):** El acceso es **100% libre y abierto**. Cualquier persona que abra el enlace o instale la app puede jugar de inmediato sin que le pida nada.
+* **A partir de medianoche (00:00:00 del domingo):** La app se bloquea automáticamente y solicita un **código de acceso único**.
+* **Desbloqueo permanente:** En cuanto una persona introduce un código válido en su móvil, ese dispositivo queda desbloqueado para siempre (nunca más tendrá que volver a escribirlo).
+
+### 2. Claves Maestras de Emergencia (Solo para Alex)
+Si necesitas desbloquear cualquier teléfono tú mismo al instante, introduce cualquiera de estas claves maestras:
+* **`ALEXANDER`**
+* **`ALEX2026`**
+
+### 3. Cómo repartir los Códigos a los asistentes desde tu propio móvil
+En el menú secreto del mago (esquina superior derecha), tienes el apartado **«🔐 Gestión de Códigos»**:
+1. Introduce tu PIN maestro: **`ALEX2026`**.
+2. Verás el botón verde: **«📋 Copiar siguiente código libre»**.
+3. Al tocarlo, copia al portapapeles el siguiente código (ej. `ALX-2049`) para pegarlo directamente por WhatsApp al asistente, y la app lo marca como entregado para no repetir códigos.
+4. También puedes pulsar en **«Ver todos los códigos»** para ver los 100 códigos generados, o consultar el archivo de texto `CODIGOS_ALEX.txt`.
+
+### 4. ¿Quieres probar cómo se ve la pantalla de bloqueo ahora mismo?
+Dentro de la Gestión de Códigos en tu móvil, pulsa **«🧪 Probar Pantalla de Bloqueo»**. Podrás ver exactamente lo que verá el público a medianoche y probar a desbloquearlo tú mismo.

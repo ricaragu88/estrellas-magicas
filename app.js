@@ -527,9 +527,407 @@
     });
   }
 
-  // Initialize
+  // ========================================================
+  // Gated Access Control & Magician Code Manager
+  // ========================================================
+  const LOCK_ACTIVATION_TIMESTAMP = new Date('2026-11-15T00:00:00+01:00').getTime();
+  const MASTER_KEYS = ['ALEXANDER', 'ALEX2026', 'CONGRESO2026', 'ELGRANALEXANDER'];
+  const ADMIN_PIN = 'ALEX2026';
+
+  const UNIQUE_CODES_LIST = [
+    "ALX-2049","ALX-4947","ALX-8935","ALX-9280","ALX-3112","ALX-9145","ALX-1402","ALX-8169","ALX-4872","ALX-8043",
+    "ALX-3519","ALX-1434","ALX-7892","ALX-9848","ALX-7208","ALX-7505","ALX-5442","ALX-4609","ALX-4913","ALX-8456",
+    "ALX-3450","ALX-9563","ALX-4457","ALX-7019","ALX-4167","ALX-7466","ALX-8878","ALX-5768","ALX-3046","ALX-4023",
+    "ALX-6852","ALX-3907","ALX-8493","ALX-7878","ALX-3311","ALX-2214","ALX-4599","ALX-4006","ALX-2849","ALX-6955",
+    "ALX-9625","ALX-3926","ALX-6473","ALX-3295","ALX-8171","ALX-5614","ALX-3886","ALX-3443","ALX-7158","ALX-5338",
+    "ALX-3429","ALX-4698","ALX-3947","ALX-1996","ALX-3463","ALX-7923","ALX-8821","ALX-9275","ALX-7957","ALX-6843",
+    "ALX-7400","ALX-3467","ALX-6449","ALX-6791","ALX-6934","ALX-9627","ALX-4367","ALX-8979","ALX-9081","ALX-3529",
+    "ALX-6268","ALX-9074","ALX-3020","ALX-9394","ALX-8541","ALX-4980","ALX-8178","ALX-9493","ALX-7068","ALX-5166",
+    "ALX-4332","ALX-9108","ALX-8451","ALX-4204","ALX-1462","ALX-7290","ALX-6341","ALX-4128","ALX-8081","ALX-7958",
+    "ALX-3528","ALX-9197","ALX-5215","ALX-9767","ALX-6742","ALX-7086","ALX-3821","ALX-1193","ALX-2794","ALX-7639"
+  ];
+  const UNIQUE_CODES_SET = new Set(UNIQUE_CODES_LIST);
+
+  // Toast Notification Helper
+  let toastEl = null;
+  let toastTimer = null;
+  function showToast(msg) {
+    if (!toastEl) {
+      toastEl = document.createElement('div');
+      toastEl.className = 'magic-toast';
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toastEl.classList.remove('show');
+    }, 3200);
+  }
+
+  function normalizeCode(raw) {
+    if (!raw) return '';
+    let clean = raw.trim().toUpperCase();
+    if (/^ALX\d{4}$/.test(clean)) {
+      clean = 'ALX-' + clean.slice(3);
+    }
+    return clean;
+  }
+
+  function isValidAccessCode(code) {
+    const clean = normalizeCode(code);
+    if (!clean) return false;
+    if (MASTER_KEYS.includes(clean)) return true;
+    if (UNIQUE_CODES_SET.has(clean)) return true;
+    // Algorithmic fallback: ALX-XXXX with sum of digits even
+    if (/^ALX-\d{4}$/.test(clean)) {
+      const digits = clean.slice(4).split('').map(Number);
+      const sum = digits.reduce((a, b) => a + b, 0);
+      if (sum % 2 === 0) return true;
+    }
+    return false;
+  }
+
+  // Check URL params for testing (?test_lock=1, ?clear_lock=1)
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('test_lock') === '1') {
+    sessionStorage.setItem('alex_test_lock', 'true');
+  } else if (urlParams.get('clear_lock') === '1') {
+    localStorage.removeItem('alex_unlocked');
+    localStorage.removeItem('alex_unlocked_code');
+    sessionStorage.removeItem('alex_test_lock');
+  }
+
+  // --- Lock UI Elements ---
+  const lockScreenOverlay = document.getElementById('lockScreenOverlay');
+  const lockCodeInput = document.getElementById('lockCodeInput');
+  const btnUnlockApp = document.getElementById('btnUnlockApp');
+  const lockErrorMsg = document.getElementById('lockErrorMsg');
+  const lockForm = document.getElementById('lockForm');
+  const lockIconGlow = document.getElementById('lockIconGlow');
+
+  function isAppUnlocked() {
+    return localStorage.getItem('alex_unlocked') === 'true';
+  }
+
+  function isSimulationMode() {
+    return sessionStorage.getItem('alex_test_lock') === 'true';
+  }
+
+  function shouldLockScreenBeVisible() {
+    if (isSimulationMode()) return true;
+    if (isAppUnlocked()) return false;
+    // Free open access before midnight of Nov 14 (Nov 15 00:00:00 CET)!
+    return Date.now() >= LOCK_ACTIVATION_TIMESTAMP;
+  }
+
+  function updateLockScreenVisibility() {
+    if (!lockScreenOverlay) return;
+    const mustLock = shouldLockScreenBeVisible();
+    if (mustLock) {
+      lockScreenOverlay.style.display = 'flex';
+      lockScreenOverlay.setAttribute('aria-hidden', 'false');
+      if (lockCodeInput) {
+        setTimeout(() => lockCodeInput.focus(), 300);
+      }
+    } else {
+      lockScreenOverlay.style.display = 'none';
+      lockScreenOverlay.setAttribute('aria-hidden', 'true');
+    }
+    updateAdminStatusPill();
+  }
+
+  function showLockError(msg) {
+    if (!lockErrorMsg) return;
+    lockErrorMsg.textContent = msg;
+    lockErrorMsg.style.display = 'block';
+    if (lockCodeInput) {
+      lockCodeInput.style.borderColor = '#ef4444';
+      setTimeout(() => {
+        lockCodeInput.style.borderColor = '';
+      }, 1500);
+    }
+  }
+
+  function handleUnlockAttempt() {
+    if (!lockCodeInput) return;
+    const val = lockCodeInput.value;
+    if (!val || !val.trim()) {
+      showLockError('Por favor, escribe un código de acceso.');
+      return;
+    }
+    const clean = normalizeCode(val);
+    if (isValidAccessCode(clean)) {
+      // Valid Code!
+      localStorage.setItem('alex_unlocked', 'true');
+      localStorage.setItem('alex_unlocked_code', clean);
+      sessionStorage.removeItem('alex_test_lock');
+      
+      markCodeAsUsedLocally(clean);
+
+      if (lockErrorMsg) lockErrorMsg.style.display = 'none';
+      btnUnlockApp.innerHTML = '<span>¡Desbloqueado! ✨</span>';
+      btnUnlockApp.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+
+      setTimeout(() => {
+        lockScreenOverlay.style.transition = 'opacity 0.5s ease';
+        lockScreenOverlay.style.opacity = '0';
+        setTimeout(() => {
+          lockScreenOverlay.style.display = 'none';
+          lockScreenOverlay.style.opacity = '1';
+          lockScreenOverlay.style.transition = '';
+          btnUnlockApp.innerHTML = '<span>Entrar ✨</span>';
+          btnUnlockApp.style.background = '';
+          lockCodeInput.value = '';
+          goToSlide(0);
+          showToast('✨ ¡Bienvenido a Los Emojis Mágicos!');
+        }, 500);
+      }, 400);
+    } else {
+      showLockError('Código no válido. Comprueba los dígitos o pídelo a Alex.');
+    }
+  }
+
+  if (btnUnlockApp) {
+    btnUnlockApp.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleUnlockAttempt();
+    });
+  }
+
+  if (lockForm) {
+    lockForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      handleUnlockAttempt();
+    });
+  }
+
+  if (lockCodeInput) {
+    lockCodeInput.addEventListener('input', () => {
+      lockCodeInput.value = lockCodeInput.value.toUpperCase();
+      if (lockErrorMsg) lockErrorMsg.style.display = 'none';
+    });
+  }
+
+  // Alex Secret Shortcut on Lock Screen: 5 quick taps on 🔐 opens Admin Drawer
+  let lockTapCount = 0;
+  let lockTapTimer = null;
+  if (lockIconGlow) {
+    lockIconGlow.addEventListener('click', () => {
+      lockTapCount++;
+      clearTimeout(lockTapTimer);
+      if (lockTapCount >= 5) {
+        lockTapCount = 0;
+        openCheatSheet();
+        showToast('🧙‍♂️ Menú Secreto de Alex Activado');
+      } else {
+        lockTapTimer = setTimeout(() => { lockTapCount = 0; }, 1200);
+      }
+    });
+  }
+
+  // --- Admin Section Logic inside Magician Drawer ---
+  const adminStatusPill = document.getElementById('adminStatusPill');
+  const adminPinGate = document.getElementById('adminPinGate');
+  const adminPinInput = document.getElementById('adminPinInput');
+  const btnAdminLogin = document.getElementById('btnAdminLogin');
+  const adminPinError = document.getElementById('adminPinError');
+  const adminControlsPanel = document.getElementById('adminControlsPanel');
+  const btnCopyNextCode = document.getElementById('btnCopyNextCode');
+  const nextCodePreview = document.getElementById('nextCodePreview');
+  const btnToggleSimulateLock = document.getElementById('btnToggleSimulateLock');
+  const usedCodesCountEl = document.getElementById('usedCodesCount');
+  const btnToggleCodesList = document.getElementById('btnToggleCodesList');
+  const adminCodesListContainer = document.getElementById('adminCodesListContainer');
+  const codesChipsGrid = document.getElementById('codesChipsGrid');
+  const btnResetUsedCodes = document.getElementById('btnResetUsedCodes');
+  const btnLockThisDevice = document.getElementById('btnLockThisDevice');
+
+  function getUsedCodes() {
+    try {
+      const data = localStorage.getItem('alex_managed_codes_used');
+      return data ? JSON.parse(data) : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function markCodeAsUsedLocally(code) {
+    if (!code || !code.startsWith('ALX-')) return;
+    const used = getUsedCodes();
+    if (!used.includes(code)) {
+      used.push(code);
+      localStorage.setItem('alex_managed_codes_used', JSON.stringify(used));
+      renderAdminCodesUI();
+    }
+  }
+
+  function getNextAvailableCode() {
+    const usedSet = new Set(getUsedCodes());
+    for (const c of UNIQUE_CODES_LIST) {
+      if (!usedSet.has(c)) return c;
+    }
+    return null;
+  }
+
+  function updateAdminStatusPill() {
+    if (!adminStatusPill) return;
+    const now = Date.now();
+    const isFree = now < LOCK_ACTIVATION_TIMESTAMP && !isSimulationMode();
+    if (isFree) {
+      adminStatusPill.textContent = 'Libre Hoy (hasta 00:00)';
+      adminStatusPill.className = 'admin-status-pill status-free';
+    } else {
+      adminStatusPill.textContent = isSimulationMode() ? 'Modo Prueba' : 'Bloqueo Activo';
+      adminStatusPill.className = 'admin-status-pill status-locked';
+    }
+  }
+
+  function renderAdminCodesUI() {
+    const usedCodes = getUsedCodes();
+    const usedSet = new Set(usedCodes);
+    if (usedCodesCountEl) {
+      usedCodesCountEl.textContent = usedCodes.length;
+    }
+    const nextCode = getNextAvailableCode();
+    if (nextCodePreview) {
+      nextCodePreview.textContent = nextCode ? nextCode : '¡Agotados!';
+    }
+
+    if (codesChipsGrid) {
+      codesChipsGrid.innerHTML = '';
+      UNIQUE_CODES_LIST.forEach((code) => {
+        const isUsed = usedSet.has(code);
+        const chip = document.createElement('div');
+        chip.className = `code-chip ${isUsed ? 'used' : 'available'}`;
+        chip.textContent = code;
+        chip.title = isUsed ? 'Entregado (Toca para volver a disponible)' : 'Disponible (Toca para copiar)';
+        chip.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!isUsed) {
+            copyCodeToClipboard(code);
+            markCodeAsUsedLocally(code);
+          } else {
+            const newUsed = getUsedCodes().filter(c => c !== code);
+            localStorage.setItem('alex_managed_codes_used', JSON.stringify(newUsed));
+            renderAdminCodesUI();
+            showToast(`Código ${code} marcado como disponible.`);
+          }
+        });
+        codesChipsGrid.appendChild(chip);
+      });
+    }
+  }
+
+  async function copyCodeToClipboard(code) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(code);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      showToast(`📋 ¡Código ${code} copiado al portapapeles!`);
+    } catch (_) {
+      showToast(`Código: ${code}`);
+    }
+  }
+
+  function checkAdminSession() {
+    const isAdminLogged = sessionStorage.getItem('alex_admin_logged') === 'true';
+    if (isAdminLogged) {
+      if (adminPinGate) adminPinGate.style.display = 'none';
+      if (adminControlsPanel) adminControlsPanel.style.display = 'block';
+      renderAdminCodesUI();
+    } else {
+      if (adminPinGate) adminPinGate.style.display = 'block';
+      if (adminControlsPanel) adminControlsPanel.style.display = 'none';
+    }
+    updateAdminStatusPill();
+  }
+
+  if (btnAdminLogin && adminPinInput) {
+    btnAdminLogin.addEventListener('click', () => {
+      const pin = adminPinInput.value.trim().toUpperCase();
+      if (pin === ADMIN_PIN || pin === 'ALEXANDER') {
+        sessionStorage.setItem('alex_admin_logged', 'true');
+        if (adminPinError) adminPinError.style.display = 'none';
+        adminPinInput.value = '';
+        checkAdminSession();
+      } else {
+        if (adminPinError) {
+          adminPinError.style.display = 'block';
+          adminPinError.textContent = 'PIN incorrecto (usa ALEX2026)';
+        }
+      }
+    });
+
+    adminPinInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        btnAdminLogin.click();
+      }
+    });
+  }
+
+  if (btnCopyNextCode) {
+    btnCopyNextCode.addEventListener('click', () => {
+      const nextCode = getNextAvailableCode();
+      if (nextCode) {
+        copyCodeToClipboard(nextCode);
+        markCodeAsUsedLocally(nextCode);
+      } else {
+        showToast('⚠️ Se han entregado los 100 códigos.');
+      }
+    });
+  }
+
+  if (btnToggleSimulateLock) {
+    btnToggleSimulateLock.addEventListener('click', () => {
+      closeCheatSheet();
+      sessionStorage.setItem('alex_test_lock', 'true');
+      updateLockScreenVisibility();
+      showToast('🧪 Probando pantalla de bloqueo');
+    });
+  }
+
+  if (btnToggleCodesList && adminCodesListContainer) {
+    btnToggleCodesList.addEventListener('click', () => {
+      const isHidden = adminCodesListContainer.style.display === 'none';
+      adminCodesListContainer.style.display = isHidden ? 'block' : 'none';
+      btnToggleCodesList.textContent = isHidden ? 'Ocultar códigos ▴' : 'Ver todos los códigos ▾';
+    });
+  }
+
+  if (btnResetUsedCodes) {
+    btnResetUsedCodes.addEventListener('click', () => {
+      if (confirm('¿Quieres reiniciar la lista de códigos entregados?')) {
+        localStorage.removeItem('alex_managed_codes_used');
+        renderAdminCodesUI();
+        showToast('Lista de códigos reiniciada.');
+      }
+    });
+  }
+
+  if (btnLockThisDevice) {
+    btnLockThisDevice.addEventListener('click', () => {
+      localStorage.removeItem('alex_unlocked');
+      localStorage.removeItem('alex_unlocked_code');
+      sessionStorage.setItem('alex_test_lock', 'true');
+      closeCheatSheet();
+      updateLockScreenVisibility();
+      showToast('🔒 Móvil bloqueado para prueba.');
+    });
+  }
+
+  // Initialize App & Lock System
   goToSlide(0);
   requestWakeLock();
+  updateLockScreenVisibility();
+  checkAdminSession();
 
   // Register PWA Service Worker with auto-update
   if ('serviceWorker' in navigator) {

@@ -16,11 +16,39 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=20261112_2">
+  <link rel="stylesheet" href="style.css?v=20261114_1">
 </head>
 <body>
   <div id="app" class="app-container">
     
+    <!-- Lock Screen Overlay (Active after midnight or in test mode) -->
+    <div class="lock-screen-overlay" id="lockScreenOverlay" style="display: none;" aria-hidden="true">
+      <div class="lock-modal-card">
+        <div class="lock-icon-wrapper" id="lockIconGlow" title="Zona Secreta de Alex">
+          <span class="lock-emoji">🔐</span>
+          <div class="lock-sparkle"></div>
+        </div>
+        <h2 class="lock-title">Acceso Exclusivo</h2>
+        <p class="lock-brand">El Gran Alexander · Congreso Mágico</p>
+        <p class="lock-desc">Introduce tu código de acceso para desbloquear el juego de las Estrellas Mágicas.</p>
+        
+        <form id="lockForm" class="lock-form" onsubmit="return false;">
+          <div class="lock-input-group">
+            <input type="text" id="lockCodeInput" class="lock-input" placeholder="Ej: ALX-2049" maxlength="15" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+            <button type="submit" id="btnUnlockApp" class="btn-unlock-app">
+              <span>Entrar ✨</span>
+            </button>
+          </div>
+          <div class="lock-error-msg" id="lockErrorMsg" style="display: none;"></div>
+        </form>
+        
+        <div class="lock-footer-info">
+          <span>🔒 Una vez activado, este móvil quedará desbloqueado para siempre.</span>
+          <p class="lock-contact-hint">¿No tienes tu código? Pídeselo a <strong>Alex</strong> durante el congreso.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- In-App Browser Warning Banner (WhatsApp, Telegram) -->
     <div class="inapp-warning-banner" id="inAppWarning" style="display: none;">
       <span>⚠️ Estás dentro de WhatsApp. Toca los <strong>3 puntos (⋮)</strong> arriba y pulsa <strong>«Abrir en Chrome/Safari»</strong> para poder instalar la App.</span>
@@ -217,11 +245,57 @@
             <li><strong>Esquina sup. der:</strong> Abrir/cerrar esta chuleta</li>
           </ul>
         </div>
+
+        <!-- Admin / Codes Management Section for Alex -->
+        <div class="cheat-section admin-box" id="adminBox">
+          <div class="admin-header-row">
+            <h4>🔐 Gestión de Códigos (Para Alex)</h4>
+            <span class="admin-status-pill" id="adminStatusPill">Cargando...</span>
+          </div>
+
+          <div id="adminPinGate" class="admin-pin-gate">
+            <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:8px;">Introduce tu PIN maestro para gestionar los códigos:</p>
+            <div style="display:flex; gap:8px;">
+              <input type="password" id="adminPinInput" class="admin-pin-input" placeholder="PIN maestro" maxlength="15">
+              <button type="button" id="btnAdminLogin" class="btn-admin-action">Acceder</button>
+            </div>
+            <div id="adminPinError" style="color:#ef4444; font-size:0.8rem; margin-top:4px; display:none;">PIN incorrecto</div>
+          </div>
+
+          <div id="adminControlsPanel" class="admin-controls-panel" style="display: none;">
+            <div class="admin-quick-actions">
+              <button type="button" id="btnCopyNextCode" class="btn-copy-code">
+                <span>📋 Copiar siguiente código libre:</span>
+                <strong id="nextCodePreview">ALX-....</strong>
+              </button>
+              <button type="button" id="btnToggleSimulateLock" class="btn-test-lock">
+                <span>🧪 Probar Pantalla de Bloqueo</span>
+              </button>
+            </div>
+
+            <div class="admin-stats-row">
+              <div>Entregados: <strong id="usedCodesCount" style="color:var(--gold-accent)">0</strong> / 100</div>
+              <button type="button" id="btnToggleCodesList" class="btn-toggle-codes-list">Ver todos los códigos ▾</button>
+            </div>
+
+            <div id="adminCodesListContainer" class="admin-codes-list-container" style="display: none;">
+              <div class="codes-chips-grid" id="codesChipsGrid">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+              <button type="button" id="btnResetUsedCodes" class="btn-reset-codes" title="Reiniciar lista de entregados">Reiniciar contadores</button>
+              <button type="button" id="btnLockThisDevice" class="btn-reset-codes" style="color:#f87171;" title="Bloquear este móvil para probar">Bloquear mi móvil</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </aside>
 
   </div>
 
-  <script src="app.js?v=20261112_2"></script>
+  <script src="app.js?v=20261114_1"></script>
 </body>
 </html>
