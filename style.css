@@ -285,6 +285,56 @@ html, body {
   cursor: pointer;
 }
 
+/* Magician Secret PIN Modal */
+.pin-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 14, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  z-index: 550;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  animation: lockFadeIn 0.25s ease-out;
+}
+
+.pin-modal-card {
+  background: rgba(20, 24, 44, 0.95);
+  border: 1px solid rgba(245, 196, 67, 0.4);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(245, 196, 67, 0.2);
+  border-radius: 24px;
+  padding: 28px 22px;
+  max-width: 340px;
+  width: 100%;
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pin-modal-card .pin-icon {
+  font-size: 2.8rem;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+}
+
+.pin-modal-card h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--gold-accent);
+  margin-bottom: 6px;
+}
+
+.pin-modal-card p {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
 /* Specific styling for the cover poster card */
 .cover-card-wrapper {
   max-height: 80vh;

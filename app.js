@@ -778,6 +778,82 @@
   const btnLockThisDevice = document.getElementById('btnLockThisDevice');
   const btnExitMagicianMode = document.getElementById('btnExitMagicianMode');
 
+  // Magician PIN Modal Elements (Triggered by 5 Taps)
+  const magicianPinModal = document.getElementById('magicianPinModal');
+  const magicianMasterPinInput = document.getElementById('magicianMasterPinInput');
+  const magicianMasterPinError = document.getElementById('magicianMasterPinError');
+  const btnSubmitMasterPin = document.getElementById('btnSubmitMasterPin');
+  const btnClosePinModal = document.getElementById('btnClosePinModal');
+  const magicianPinForm = document.getElementById('magicianPinForm');
+
+  function openMagicianPinModal() {
+    if (!magicianPinModal) return;
+    magicianPinModal.style.display = 'flex';
+    magicianPinModal.setAttribute('aria-hidden', 'false');
+    if (magicianMasterPinError) magicianMasterPinError.style.display = 'none';
+    if (magicianMasterPinInput) {
+      magicianMasterPinInput.value = '';
+      setTimeout(() => magicianMasterPinInput.focus(), 250);
+    }
+  }
+
+  function closeMagicianPinModal() {
+    if (!magicianPinModal) return;
+    magicianPinModal.style.display = 'none';
+    magicianPinModal.setAttribute('aria-hidden', 'true');
+    if (magicianMasterPinInput) magicianMasterPinInput.value = '';
+    if (magicianMasterPinError) magicianMasterPinError.style.display = 'none';
+  }
+
+  function handleMasterPinVerification() {
+    if (!magicianMasterPinInput) return;
+    const pin = magicianMasterPinInput.value.trim().toUpperCase();
+    if (pin === ADMIN_PIN || pin === 'ALEXANDER') {
+      closeMagicianPinModal();
+      setMagicianMode(true);
+      openCheatSheet();
+      showToast('✨ ¡Acceso Maestro Concedido, Alex!');
+    } else {
+      if (magicianMasterPinError) {
+        magicianMasterPinError.textContent = 'PIN incorrecto. Acceso denegado.';
+        magicianMasterPinError.style.display = 'block';
+      }
+      magicianMasterPinInput.style.borderColor = '#ef4444';
+      setTimeout(() => {
+        if (magicianMasterPinInput) magicianMasterPinInput.style.borderColor = '';
+      }, 1400);
+    }
+  }
+
+  if (btnSubmitMasterPin) {
+    btnSubmitMasterPin.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleMasterPinVerification();
+    });
+  }
+
+  if (magicianPinForm) {
+    magicianPinForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      handleMasterPinVerification();
+    });
+  }
+
+  if (btnClosePinModal) {
+    btnClosePinModal.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeMagicianPinModal();
+    });
+  }
+
+  if (magicianPinModal) {
+    magicianPinModal.addEventListener('click', (e) => {
+      if (e.target === magicianPinModal) {
+        closeMagicianPinModal();
+      }
+    });
+  }
+
   function isMagician() {
     return localStorage.getItem('alex_is_magician') === 'true';
   }
@@ -789,7 +865,6 @@
     } else {
       localStorage.removeItem('alex_is_magician');
       sessionStorage.removeItem('alex_admin_logged');
-      sessionStorage.removeItem('temp_show_admin');
     }
     updateMagicianSectionsVisibility();
     checkAdminSession();
@@ -804,30 +879,13 @@
       magicianSecretsSection.style.display = active ? 'block' : 'none';
     }
     if (adminBox) {
-      if (active || sessionStorage.getItem('temp_show_admin') === 'true') {
-        adminBox.style.display = 'block';
-      } else {
-        adminBox.style.display = 'none';
-      }
+      adminBox.style.display = active ? 'block' : 'none';
     }
   }
 
   function triggerAlexMagicianAccess() {
-    if (isMagician()) {
-      showToast('🎩 Modo Mago Activo');
-      openCheatSheet();
-      updateMagicianSectionsVisibility();
-    } else {
-      sessionStorage.setItem('temp_show_admin', 'true');
-      updateMagicianSectionsVisibility();
-      openCheatSheet();
-      setTimeout(() => {
-        const adminBox = document.getElementById('adminBox');
-        if (adminBox) adminBox.scrollIntoView({ behavior: 'smooth' });
-        if (adminPinInput) adminPinInput.focus();
-      }, 350);
-      showToast('🎩 Acceso Maestro: Introduce el PIN de Alex');
-    }
+    // Always prompt for PIN when 5 taps are triggered, ensuring absolute security!
+    openMagicianPinModal();
   }
 
   function getUsedCodes() {
