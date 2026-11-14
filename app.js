@@ -256,13 +256,14 @@
   let topLeftHoldTimer = null;
   let didHoldTrigger = false;
 
-  zoneBack.addEventListener('pointerdown', () => {
+  zoneBack.addEventListener('pointerdown', (e) => {
+    e.stopPropagation();
     didHoldTrigger = false;
     clearTimeout(topLeftHoldTimer);
     topLeftHoldTimer = setTimeout(() => {
       didHoldTrigger = true;
       triggerAlexMagicianAccess();
-    }, 2200); // 2.2s hold also opens PIN modal
+    }, 1500); // 1.5s hold opens PIN modal
   });
 
   function recordTopLeftTap() {
@@ -270,7 +271,8 @@
     topLeftTapTimes.push(now);
     topLeftTapTimes = topLeftTapTimes.filter(t => now - t <= 1800);
 
-    if (topLeftTapTimes.length >= 5) {
+    // Trigger on 3 or more rapid taps
+    if (topLeftTapTimes.length >= 3) {
       topLeftTapTimes = [];
       triggerAlexMagicianAccess();
       return true;
@@ -283,8 +285,8 @@
     clearTimeout(topLeftHoldTimer);
     if (didHoldTrigger) return;
 
-    const reachedFive = recordTopLeftTap();
-    if (!reachedFive) {
+    const triggered = recordTopLeftTap();
+    if (!triggered) {
       if (topLeftTapTimes.length === 1) {
         prevSlide();
       }
@@ -306,7 +308,7 @@
     toggleCheatSheet();
   });
 
-  // Inside the assistant drawer: tapping the title 5 times also triggers PIN modal
+  // Inside the assistant drawer: tapping the title 3 times also triggers PIN modal
   let titleTapTimes = [];
   const drawerHeaderTitle = document.getElementById('drawerHeaderTitle');
   if (drawerHeaderTitle) {
@@ -315,7 +317,7 @@
       const now = Date.now();
       titleTapTimes.push(now);
       titleTapTimes = titleTapTimes.filter(t => now - t <= 1800);
-      if (titleTapTimes.length >= 5) {
+      if (titleTapTimes.length >= 3) {
         titleTapTimes = [];
         closeCheatSheet();
         triggerAlexMagicianAccess();
