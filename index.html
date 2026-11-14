@@ -16,7 +16,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=20261114_3">
+  <link rel="stylesheet" href="style.css?v=20261114_4">
 </head>
 <body>
   <div id="app" class="app-container">
@@ -252,35 +252,36 @@
           </div>
         </div>
 
-        <!-- Magician Automatic Gestures (Visible only in Magician Mode) -->
-        <div class="cheat-section" id="magicianSecretsSection" style="display: none;">
+      </div>
+    </aside>
+
+    <!-- Dedicated Alex Master Admin Drawer (5 Taps + PIN ALEX2026 Only) -->
+    <aside class="cheat-sheet-drawer alex-admin-drawer" id="alexAdminDrawer" aria-hidden="true">
+      <div class="drawer-header">
+        <h3>🔐 Panel de Control de Alex</h3>
+        <button class="btn-close-drawer" id="btnCloseAlexAdmin">✕</button>
+      </div>
+      
+      <div class="drawer-content">
+        <!-- Magician Automatic Gestures -->
+        <div class="cheat-section">
           <h4>Sistema Automático del Mago</h4>
           <ul class="shortcuts-list">
             <li><strong>Tocar pantalla (en estrella):</strong> El niño dice "SÍ" ➔ Suma la base y avanza</li>
             <li><strong>Deslizar a izquierda (en estrella):</strong> El niño dice "NO" ➔ Suma 0 y avanza</li>
             <li><strong>En pantalla final:</strong> La app ya tiene el emoji y la suma calculados solos</li>
             <li><strong>Tocar la bola 🔮 al final:</strong> Muestra el emoji directamente en pantalla por 4s</li>
-            <li><strong>Esquina sup. der:</strong> Abrir/cerrar esta chuleta</li>
           </ul>
         </div>
 
-        <!-- Admin / Codes Management Section for Alex (Visible only in Magician Mode) -->
-        <div class="cheat-section admin-box" id="adminBox" style="display: none;">
+        <!-- Admin / Codes Management Section for Alex -->
+        <div class="cheat-section admin-box" id="adminBox">
           <div class="admin-header-row">
-            <h4>🔐 Gestión de Códigos (Para Alex)</h4>
+            <h4>Gestión de Códigos de Acceso</h4>
             <span class="admin-status-pill" id="adminStatusPill">Cargando...</span>
           </div>
 
-          <div id="adminPinGate" class="admin-pin-gate">
-            <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:8px;">Introduce tu PIN maestro para gestionar los códigos:</p>
-            <div style="display:flex; gap:8px;">
-              <input type="password" id="adminPinInput" class="admin-pin-input" placeholder="PIN maestro" maxlength="15">
-              <button type="button" id="btnAdminLogin" class="btn-admin-action">Acceder</button>
-            </div>
-            <div id="adminPinError" style="color:#ef4444; font-size:0.8rem; margin-top:4px; display:none;">PIN incorrecto</div>
-          </div>
-
-          <div id="adminControlsPanel" class="admin-controls-panel" style="display: none;">
+          <div id="adminControlsPanel" class="admin-controls-panel">
             <div class="admin-quick-actions">
               <button type="button" id="btnCopyNextCode" class="btn-copy-code">
                 <span>📋 Copiar siguiente código libre:</span>
@@ -305,7 +306,6 @@
             <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
               <button type="button" id="btnResetUsedCodes" class="btn-reset-codes" title="Reiniciar lista de entregados">Reiniciar contadores</button>
               <button type="button" id="btnLockThisDevice" class="btn-reset-codes" style="color:#f87171;" title="Bloquear este móvil para probar">Bloquear mi móvil</button>
-              <button type="button" id="btnExitMagicianMode" class="btn-reset-codes" style="color:#94a3b8;" title="Ocultar modo mago">🔒 Salir de Modo Mago</button>
             </div>
           </div>
         </div>
@@ -315,6 +315,6 @@
 
   </div>
 
-  <script src="app.js?v=20261114_3"></script>
+  <script src="app.js?v=20261114_4"></script>
 </body>
 </html>

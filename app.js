@@ -760,13 +760,16 @@
     });
   }
 
-  // --- Magician Mode & Admin Panel System ---
+  // Clear legacy magician flags from localStorage
+  try {
+    localStorage.removeItem('alex_is_magician');
+    sessionStorage.removeItem('alex_admin_logged');
+  } catch (_) {}
+
+  // --- Dedicated Alex Admin Drawer Elements (Opened ONLY by 5 Taps + PIN) ---
+  const alexAdminDrawer = document.getElementById('alexAdminDrawer');
+  const btnCloseAlexAdmin = document.getElementById('btnCloseAlexAdmin');
   const adminStatusPill = document.getElementById('adminStatusPill');
-  const adminPinGate = document.getElementById('adminPinGate');
-  const adminPinInput = document.getElementById('adminPinInput');
-  const btnAdminLogin = document.getElementById('btnAdminLogin');
-  const adminPinError = document.getElementById('adminPinError');
-  const adminControlsPanel = document.getElementById('adminControlsPanel');
   const btnCopyNextCode = document.getElementById('btnCopyNextCode');
   const nextCodePreview = document.getElementById('nextCodePreview');
   const btnToggleSimulateLock = document.getElementById('btnToggleSimulateLock');
@@ -776,15 +779,35 @@
   const codesChipsGrid = document.getElementById('codesChipsGrid');
   const btnResetUsedCodes = document.getElementById('btnResetUsedCodes');
   const btnLockThisDevice = document.getElementById('btnLockThisDevice');
-  const btnExitMagicianMode = document.getElementById('btnExitMagicianMode');
 
-  // Magician PIN Modal Elements (Triggered by 5 Taps)
+  // Magician PIN Modal Elements (Triggered ONLY by 5 Taps)
   const magicianPinModal = document.getElementById('magicianPinModal');
   const magicianMasterPinInput = document.getElementById('magicianMasterPinInput');
   const magicianMasterPinError = document.getElementById('magicianMasterPinError');
   const btnSubmitMasterPin = document.getElementById('btnSubmitMasterPin');
   const btnClosePinModal = document.getElementById('btnClosePinModal');
   const magicianPinForm = document.getElementById('magicianPinForm');
+
+  function openAlexAdminDrawer() {
+    if (!alexAdminDrawer) return;
+    alexAdminDrawer.classList.add('open');
+    alexAdminDrawer.setAttribute('aria-hidden', 'false');
+    renderAdminCodesUI();
+    updateAdminStatusPill();
+  }
+
+  function closeAlexAdminDrawer() {
+    if (!alexAdminDrawer) return;
+    alexAdminDrawer.classList.remove('open');
+    alexAdminDrawer.setAttribute('aria-hidden', 'true');
+  }
+
+  if (btnCloseAlexAdmin) {
+    btnCloseAlexAdmin.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeAlexAdminDrawer();
+    });
+  }
 
   function openMagicianPinModal() {
     if (!magicianPinModal) return;
@@ -810,9 +833,9 @@
     const pin = magicianMasterPinInput.value.trim().toUpperCase();
     if (pin === ADMIN_PIN || pin === 'ALEXANDER') {
       closeMagicianPinModal();
-      setMagicianMode(true);
-      openCheatSheet();
-      showToast('✨ ¡Acceso Maestro Concedido, Alex!');
+      sessionStorage.setItem('alex_session_unlocked', 'true');
+      openAlexAdminDrawer();
+      showToast('✨ ¡Bienvenido al Panel Maestro, Alex!');
     } else {
       if (magicianMasterPinError) {
         magicianMasterPinError.textContent = 'PIN incorrecto. Acceso denegado.';
@@ -854,37 +877,8 @@
     });
   }
 
-  function isMagician() {
-    return localStorage.getItem('alex_is_magician') === 'true';
-  }
-
-  function setMagicianMode(active) {
-    if (active) {
-      localStorage.setItem('alex_is_magician', 'true');
-      sessionStorage.setItem('alex_admin_logged', 'true');
-    } else {
-      localStorage.removeItem('alex_is_magician');
-      sessionStorage.removeItem('alex_admin_logged');
-    }
-    updateMagicianSectionsVisibility();
-    checkAdminSession();
-  }
-
-  function updateMagicianSectionsVisibility() {
-    const active = isMagician();
-    const magicianSecretsSection = document.getElementById('magicianSecretsSection');
-    const adminBox = document.getElementById('adminBox');
-
-    if (magicianSecretsSection) {
-      magicianSecretsSection.style.display = active ? 'block' : 'none';
-    }
-    if (adminBox) {
-      adminBox.style.display = active ? 'block' : 'none';
-    }
-  }
-
   function triggerAlexMagicianAccess() {
-    // Always prompt for PIN when 5 taps are triggered, ensuring absolute security!
+    // 5 taps always triggers the master PIN modal
     openMagicianPinModal();
   }
 
@@ -982,43 +976,6 @@
     }
   }
 
-  function checkAdminSession() {
-    const isAdminLogged = sessionStorage.getItem('alex_admin_logged') === 'true' || isMagician();
-    if (isAdminLogged) {
-      if (adminPinGate) adminPinGate.style.display = 'none';
-      if (adminControlsPanel) adminControlsPanel.style.display = 'block';
-      renderAdminCodesUI();
-    } else {
-      if (adminPinGate) adminPinGate.style.display = 'block';
-      if (adminControlsPanel) adminControlsPanel.style.display = 'none';
-    }
-    updateAdminStatusPill();
-    updateMagicianSectionsVisibility();
-  }
-
-  if (btnAdminLogin && adminPinInput) {
-    btnAdminLogin.addEventListener('click', () => {
-      const pin = adminPinInput.value.trim().toUpperCase();
-      if (pin === ADMIN_PIN || pin === 'ALEXANDER') {
-        setMagicianMode(true);
-        if (adminPinError) adminPinError.style.display = 'none';
-        adminPinInput.value = '';
-        showToast('✨ ¡Modo Mago activado permanentemente en este móvil!');
-      } else {
-        if (adminPinError) {
-          adminPinError.style.display = 'block';
-          adminPinError.textContent = 'PIN incorrecto (usa ALEX2026)';
-        }
-      }
-    });
-
-    adminPinInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        btnAdminLogin.click();
-      }
-    });
-  }
-
   if (btnCopyNextCode) {
     btnCopyNextCode.addEventListener('click', () => {
       const nextCode = getNextAvailableCode();
@@ -1033,7 +990,7 @@
 
   if (btnToggleSimulateLock) {
     btnToggleSimulateLock.addEventListener('click', () => {
-      closeCheatSheet();
+      closeAlexAdminDrawer();
       sessionStorage.setItem('alex_test_lock', 'true');
       updateLockScreenVisibility();
       showToast('🧪 Probando pantalla de bloqueo');
@@ -1063,17 +1020,9 @@
       localStorage.removeItem('alex_unlocked');
       localStorage.removeItem('alex_unlocked_code');
       sessionStorage.setItem('alex_test_lock', 'true');
-      closeCheatSheet();
+      closeAlexAdminDrawer();
       updateLockScreenVisibility();
       showToast('🔒 Móvil bloqueado para prueba.');
-    });
-  }
-
-  if (btnExitMagicianMode) {
-    btnExitMagicianMode.addEventListener('click', () => {
-      setMagicianMode(false);
-      closeCheatSheet();
-      showToast('🔒 Has salido del Modo Mago (Modo Espectador activado).');
     });
   }
 
@@ -1081,7 +1030,6 @@
   goToSlide(0);
   requestWakeLock();
   updateLockScreenVisibility();
-  checkAdminSession();
 
   // Register PWA Service Worker with auto-update
   if ('serviceWorker' in navigator) {
