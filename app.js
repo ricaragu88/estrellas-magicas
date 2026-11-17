@@ -331,42 +331,48 @@
   });
 
   // --- Covert On-Screen Peek on Slide 6 (Crystal Ball) ---
-  if (telepathyGlow && revealSubtitle) {
-    telepathyGlow.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const currentSum = getCalculatedSum();
+  function toggleCrystalBallPeek(e) {
+    if (e) e.stopPropagation();
+    const currentSum = getCalculatedSum();
 
-      if (!isMagician()) {
-        // In Spectator Mode: encourage using the assistant
-        clearTimeout(peekTimer);
-        revealSubtitle.textContent = '✨ ¡Mente Conectada! Abre el ayudante arriba para ver tu emoji.';
-        peekTimer = setTimeout(() => {
-          revealSubtitle.textContent = defaultSubtitleText;
-        }, 3500);
-        return;
+    if (revealSubtitle.classList.contains('showing-peek')) {
+      // Toggle back off
+      clearTimeout(peekTimer);
+      revealSubtitle.textContent = defaultSubtitleText;
+      revealSubtitle.classList.remove('showing-peek');
+    } else {
+      // Show covert peek (1 tap on crystal ball)
+      revealSubtitle.classList.add('showing-peek');
+      if (currentSum > 0 && MNEMONIC_DATA[currentSum]) {
+        revealSubtitle.innerHTML = `<span style="color:var(--gold-accent); font-weight:800; font-size:1.15rem; text-shadow:0 0 12px rgba(245,196,67,0.5);">🔮 ${MNEMONIC_DATA[currentSum].emoji} ${MNEMONIC_DATA[currentSum].name}</span>`;
+      } else {
+        revealSubtitle.innerHTML = `<span style="color:#cbd5e1; font-weight:600;">(0 estrellas afirmativas · Toca las estrellas con SÍ o marca en el menú arriba)</span>`;
       }
-
-      // In Magician Mode: show covert peek
-      if (revealSubtitle.classList.contains('showing-peek')) {
-        // Toggle back off
-        clearTimeout(peekTimer);
+      // Auto hide after 5 seconds
+      clearTimeout(peekTimer);
+      peekTimer = setTimeout(() => {
         revealSubtitle.textContent = defaultSubtitleText;
         revealSubtitle.classList.remove('showing-peek');
-      } else {
-        // Show covert peek
-        revealSubtitle.classList.add('showing-peek');
-        if (currentSum > 0 && MNEMONIC_DATA[currentSum]) {
-          revealSubtitle.innerHTML = `<span style="color:var(--gold-accent); font-weight:800; font-size:1.15rem; text-shadow:0 0 12px rgba(245,196,67,0.5);">🔮 ${MNEMONIC_DATA[currentSum].emoji} ${MNEMONIC_DATA[currentSum].name}</span>`;
-        } else {
-          revealSubtitle.innerHTML = `<span style="color:#94a3b8; font-weight:600;">(Ninguna estrella afirmativa · 0)</span>`;
-        }
-        // Auto hide after 4.5 seconds
-        clearTimeout(peekTimer);
-        peekTimer = setTimeout(() => {
-          revealSubtitle.textContent = defaultSubtitleText;
-          revealSubtitle.classList.remove('showing-peek');
-        }, 4500);
-      }
+      }, 5000);
+    }
+  }
+
+  if (telepathyGlow && revealSubtitle) {
+    let lastGlowTap = 0;
+    telepathyGlow.addEventListener('pointerup', (e) => {
+      e.stopPropagation();
+      const now = Date.now();
+      if (now - lastGlowTap < 280) return;
+      lastGlowTap = now;
+      toggleCrystalBallPeek(e);
+    });
+
+    telepathyGlow.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const now = Date.now();
+      if (now - lastGlowTap < 280) return;
+      lastGlowTap = now;
+      toggleCrystalBallPeek(e);
     });
   }
 
