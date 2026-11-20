@@ -16,7 +16,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=20261117_1">
+  <link rel="stylesheet" href="style.css?v=20261120_1">
 </head>
 <body>
   <div id="app" class="app-container">
@@ -34,7 +34,7 @@
         
         <form id="lockForm" class="lock-form" onsubmit="return false;">
           <div class="lock-input-group">
-            <input type="text" id="lockCodeInput" class="lock-input" placeholder="Ej: ALX-2049" maxlength="15" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+            <input type="text" id="lockCodeInput" class="lock-input" placeholder="Código de acceso" maxlength="15" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
             <button type="submit" id="btnUnlockApp" class="btn-unlock-app">
               <span>Entrar ✨</span>
             </button>
@@ -182,7 +182,7 @@
         <h3>Acceso Maestro de Alex</h3>
         <p>Introduce tu PIN para acceder al control del juego y los códigos:</p>
         <form id="magicianPinForm" onsubmit="return false;">
-          <input type="password" id="magicianMasterPinInput" class="lock-input" placeholder="PIN maestro" maxlength="15" autocomplete="off" autocapitalize="characters">
+          <input type="password" id="magicianMasterPinInput" class="lock-input" placeholder="PIN secreto" maxlength="15" autocomplete="off" autocapitalize="characters">
           <div id="magicianMasterPinError" class="lock-error-msg" style="display: none; margin-top: 6px;"></div>
           <button type="submit" id="btnSubmitMasterPin" class="btn-unlock-app" style="margin-top: 10px;">
             <span>Entrar al Panel ✨</span>
@@ -315,6 +315,6 @@
 
   </div>
 
-  <script src="app.js?v=20261117_1"></script>
+  <script src="app.js?v=20261120_1"></script>
 </body>
 </html>

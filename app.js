@@ -598,7 +598,7 @@
   const ADMIN_PIN = 'ALEX2026';
 
   const UNIQUE_CODES_LIST = [
-    "ALX-2049","ALX-4947","ALX-8935","ALX-9280","ALX-3112","ALX-9145","ALX-1402","ALX-8169","ALX-4872","ALX-8043",
+    "ALX-7322","ALX-4947","ALX-8935","ALX-9280","ALX-3112","ALX-9145","ALX-1402","ALX-8169","ALX-4872","ALX-8043",
     "ALX-3519","ALX-1434","ALX-7892","ALX-9848","ALX-7208","ALX-7505","ALX-5442","ALX-4609","ALX-4913","ALX-8456",
     "ALX-3450","ALX-9563","ALX-4457","ALX-7019","ALX-4167","ALX-7466","ALX-8878","ALX-5768","ALX-3046","ALX-4023",
     "ALX-6852","ALX-3907","ALX-8493","ALX-7878","ALX-3311","ALX-2214","ALX-4599","ALX-4006","ALX-2849","ALX-6955",
@@ -640,6 +640,7 @@
   function isValidAccessCode(code) {
     const clean = normalizeCode(code);
     if (!clean) return false;
+    if (clean === 'ALX-2049') return false; // Invalidate previously shown placeholder code
     if (MASTER_KEYS.includes(clean)) return true;
     if (UNIQUE_CODES_SET.has(clean)) return true;
     // Algorithmic fallback: ALX-XXXX with sum of digits even
